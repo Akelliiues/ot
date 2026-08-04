@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบบันทึกและเสนอขออนุมัติ OT - สำนักงานสาธารณสุขอำเภอตาลสุม</title>
+    <!-- Google Fonts: Sarabun -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- SheetJS Excel Library -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+
+
+<body>
+
+    <!-- Sticky Top Header Bar -->
+    <header class="app-header no-print">
+        <div class="header-container">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.2">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1>ระบบบริหารงานปฏิบัติราชการนอกเวลา (OT)</h1>
+                    <p>สำนักงานสาธารณสุขอำเภอตาลสุม จังหวัดอุบลราชธานี</p>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <!-- Single Main Month Selector for Entire App -->
+                <div class="month-selector">
+                    <label for="monthSelect">เลือกประจำเดือน:</label>
+                    <select id="monthSelect" class="form-select">
+                        <!-- Populated dynamically via JS -->
+                    </select>
+                </div>
+
+                <!-- Dark / Light Theme Toggle -->
+                <div class="theme-switch-wrapper">
+                    <span class="theme-icon">☀️</span>
+                    <label class="theme-switch" for="checkbox">
+                        <input type="checkbox" id="checkbox" />
+                        <div class="slider round"></div>
+                    </label>
+                    <span class="theme-icon">🌙</span>
+                </div>
+
+                <button class="btn btn-primary" onclick="window.print()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    พิมพ์เอกสาร
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sticky Navigation Tabs -->
+    <nav class="nav-tabs-container no-print">
+        <div class="nav-tabs">
+            <button class="tab-btn active" data-tab="tab-plan">
+                📅 ๑. แผนการปฏิบัติงานล่วงเวลา (OverTime)
+            </button>
+            <button class="tab-btn" data-tab="tab-daily">
+                📝 ๒. บัญชีลงเวลาปฏิบัติงาน ( รายวัน )
+            </button>
+            <button class="tab-btn" data-tab="tab-summary">
+                💰 ๓. หลักฐานการจ่ายเงินตอบแทน
+            </button>
+            <button class="tab-btn" data-tab="tab-memo">
+                📄 ๔. บันทึกข้อความขออนุมัติ
+            </button>
+            <button class="tab-btn" data-tab="tab-report">
+                📊 ๕. รายงานผลการปฏิบัติงาน (เอกสาร ๔)
+            </button>
+            <button class="tab-btn" data-tab="tab-staff">
+                ⚙️ ๖. จัดการข้อมูลบุคลากร
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+        <!-- Tab 1: OT Work Plan Matrix (แผนปฏิบัติงานรายเดือน) -->
+        <section id="tab-plan" class="tab-content active">
+            <div class="card no-print">
+                <div class="card-header">
+                    <div>
+                        <h2>แผนการปฏิบัติงานนอกเวลาราชการประจำเดือน</h2>
+                        <p class="subtitle">คลิกที่ช่องวันที่เพื่อสลับเปิด-ปิด การปฏิบัติงาน (วันปกติ ๒ ชม. = ๕๐ บาท /
+                            วันหยุด ๔ ชม. = ๒๔๐ บาท)</p>
+                    </div>
+                    <div class="card-actions" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span class="badge badge-info">วันปกติ (๑๖.๓๐-๑๘.๓๐ น.)</span>
+                        <span class="badge badge-warning">วันหยุดราชการ (๐๘.๐๐-๑๒.๐๐ น.)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Printable Official Form 1: Work Plan Document -->
+            <div class="official-paper landscape-mode">
+                <div class="official-header">
+                    <h3>แผนการปฏิบัติงานนอกเวลาราชการและวันหยุดราชการ</h3>
+                    <h4>หน่วยงาน สำนักงานสาธารณสุขอำเภอตาลสุม ประจำเดือน <span class="current-month-text">กรกฎาคม พ.ศ.
+                            ๒๕๖๙</span></h4>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="official-table plan-matrix-table">
+                        <thead>
+                            <tr id="planHeaderRow1">
+                                <th rowspan="2" style="width: 28px;">ลำดับ</th>
+                                <th rowspan="2" style="width: 140px;">ชื่อ - สกุล</th>
+                                <th rowspan="2" style="width: 110px;">ตำแหน่ง</th>
+                                <th rowspan="2" style="width: 60px;">อัตรา/ชม.</th>
+                                <th id="planHeaderDatesGroup" colspan="31">วันที่ปฏิบัติงาน</th>
+                                <th colspan="2">รวมการปฏิบัติงาน</th>
+                            </tr>
+                            <tr id="planHeaderDates">
+                                <!-- Dynamic Dates 1-31 populated via JS -->
+                            </tr>
+                        </thead>
+                        <tbody id="planTableBody">
+                            <!-- Dynamic Staff OT Matrix Rows -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Official Signatures Tab 1 -->
+                <div class="official-signatures flex-3">
+                    <div class="sig-block">
+                        <div class="sig-row">
+                            <span class="sig-prefix">(ลงชื่อ)</span>
+                            <div class="sig-center-box">
+                                <span class="sig-dots">...................................................</span>
+                                <p class="sig-name">(นางสาวพัชรี ภูธร)</p>
+                                <p class="sig-title">นักวิชาการสาธารณสุขชำนาญการ</p>
+                            </div>
+                            <span class="sig-role">ผู้เสนอแผนการปฏิบัติงาน</span>
+                        </div>
+                    </div>
+
+                    <div class="sig-block">
+                        <div class="sig-row">
+                            <span class="sig-prefix">(ลงชื่อ)</span>
+                            <div class="sig-center-box">
+                                <span class="sig-dots">...................................................</span>
+                                <p class="sig-name">(นายพนิต เกตุทอง)</p>
+                                <p class="sig-title">ผู้ช่วยสาธารณสุขอำเภอตาลสุม</p>
+                            </div>
+                            <span class="sig-role">ผู้เห็นชอบแผนปฏิบัติงาน</span>
+                        </div>
+                    </div>
+
+                    <div class="sig-block">
+                        <div class="sig-row">
+                            <span class="sig-prefix">(ลงชื่อ)</span>
+                            <div class="sig-center-box">
+                                <span class="sig-dots">...................................................</span>
+                                <p class="sig-name">(นายอุทยาน จันทรโสภา)</p>
+                                <p class="sig-title">สาธารณสุขอำเภอตาลสุม</p>
+                            </div>
+                            <span class="sig-role">ผู้อนุมัติ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="official-footer-note">
+                    <strong>หมายเหตุ</strong> วันทำการอยู่ปฏิบัติงาน ตั้งแต่เวลา ๑๖.๓๐-๑๘.๓๐ น. = ๒ ชม.ๆละ๕๐บาท
+                    วันหยุดราชการ อยู่ปฏิบัติงาน ตั้งแต่เวลา ๐๘.๐๐-๑๒.๐๐ น. = ๔ ชม.ๆละ๖๐บาท (ระเบียบกระทรวงการคลัง
+                    ว่าด้วยการจ่ายค่าตอบแทน ๒๕๕๐)
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 2: Daily Sign-in Log -->
+        <section id="tab-daily" class="tab-content">
+            <div class="card no-print">
+                <div class="card-header">
+                    <div>
+                        <h2>บัญชีลงเวลาการปฏิบัติงานนอกเวลาราชการ (รายวัน)</h2>
+                        <p class="subtitle">เลือกวันที่ต้องการพิมพ์ใบลงเวลาราชการประจำวัน หรือส่งออกไฟล์ Excel รวมทั้งเดือน</p>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <div class="month-selector">
+                            <label for="dailyDateSelect">เลือกวันที่:</label>
+                            <select id="dailyDateSelect" class="form-select">
+                                <!-- Populated dynamically via JS -->
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" onclick="app.exportDailyExcelMonth()" style="background: #16a34a; color: white; border-color: #16a34a; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                            📊 ส่งออก Excel ทั้งเดือน (Multi-Sheet)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Printable Official Form 1: Daily Log -->
+            <div class="official-paper portrait-mode" id="dailyPrintArea">
+                <div class="official-header">
+                    <h3>บัญชีลงเวลาการปฏิบัติงานนอกเวลาราชการและวันหยุดราชการ</h3>
+                    <h4>หน่วยงาน สำนักงานสาธารณสุขอำเภอตาลสุม ประจำวันที่ <span id="dailyDateText">๑ กรกฎาคม พ.ศ.
+                            ๒๕๖๙</span></h4>
+                </div>
+
+                <table class="official-table daily-table">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" style="width: 32px;">ลำดับ</th>
+                            <th rowspan="2" style="width: 140px;">ชื่อ-สกุล</th>
+                            <th rowspan="2" style="width: 130px;">ตำแหน่ง</th>
+                            <th colspan="2">เวลามา</th>
+                            <th colspan="2">เวลากลับ</th>
+                            <th rowspan="2" style="width: 80px;">หมายเหตุ</th>
+                        </tr>
+                        <tr>
+                            <th style="width: 55px;">เวลา</th>
+                            <th style="width: 75px;">ลายมือชื่อ</th>
+                            <th style="width: 55px;">เวลา</th>
+                            <th style="width: 75px;">ลายมือชื่อ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dailyTableBody">
+                        <!-- Dynamic daily sign-in rows -->
+                    </tbody>
+                </table>
+
+                <div class="daily-form-footer">
+                    <div class="summary-counts">
+                        รวมผู้มาปฏิบัติงานครั้งนี้ จำนวน <span id="countTotal"
+                            class="dotted-count-inline">.......๗.......</span> คน แยกเป็น<br>
+                        ข้าราชการ จำนวน <span id="countGov" class="dotted-count-inline">.......๔.......</span> คน
+                        พนักงานราชการ จำนวน <span id="countState" class="dotted-count-inline">.......๑.......</span> คน
+                        พนักงานกระทรวงสาธารณสุข จำนวน <span id="countMoh"
+                            class="dotted-count-inline">.......๒.......</span> คน
+                    </div>
+
+                    <div class="supervisor-sig-wrapper margin-down-2rows">
+                        <div class="supervisor-sig-box">
+                            <div class="sig-line">
+                                <span class="sig-label">(ลงชื่อ)</span>
+                                <span>................................................... ผู้ควบคุม/ตรวจสอบ</span>
+                            </div>
+                            <div class="sig-line">
+                                <span class="sig-label"></span>
+                                <span>(นายอุทยาน จันทรโสภา)</span>
+                            </div>
+                            <div class="sig-line">
+                                <span class="sig-label">ตำแหน่ง</span>
+                                <span>สาธารณสุขอำเภอตาลสุม</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 3: Official Payment Voucher (หลักฐานการจ่ายเงิน) -->
+        <section id="tab-summary" class="tab-content">
+            <div class="card no-print">
+                <div class="card-header">
+                    <div>
+                        <h2>หลักฐานการจ่ายเงินตอบแทนการปฏิบัติงานนอกเวลาราชการ</h2>
+                        <p class="subtitle">ระบบจะสรุปจำนวนวัน ชั่วโมง และคำนวณจำนวนเงินให้อัตโนมัติ</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-secondary" onclick="app.recalculateAll()">🔄 คำนวณยอดเงินใหม่</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Printable Official Form 3: Payment Voucher Document -->
+            <div class="official-paper landscape-mode">
+                <div class="official-header">
+                    <h3>หลักฐานการจ่ายเงินตอบแทนการปฏิบัติงานนอกเวลาราชการและวันหยุดราชการ</h3>
+                    <h4>ส่วนราชการ สำนักงานสาธารณสุขอำเภอตาลสุม ประจำเดือน <span class="current-month-text">กรกฎาคม พ.ศ.
+                            ๒๕๖๙</span></h4>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="official-table summary-table">
+                        <thead>
+                            <tr id="summaryHeaderRow1">
+                                <th rowspan="2" style="width: 28px;">ลำดับ</th>
+                                <th rowspan="2" style="width: 140px;">ชื่อ - สกุล</th>
+                                <th rowspan="2" style="width: 60px;">อัตรา/ชม.</th>
+                                <th id="summaryHeaderDatesGroup" colspan="31">วันที่ปฏิบัติงาน</th>
+                                <th colspan="2">รวมการปฏิบัติงาน</th>
+                                <th rowspan="2" style="width: 75px;">รวมเงิน (บาท)</th>
+                                <th rowspan="2" style="width: 75px;">เงินสุทธิ (บาท)</th>
+                                <th rowspan="2" style="width: 75px;">วัน/เดือน/ปี ที่รับเงิน</th>
+                                <th rowspan="2" style="width: 80px;">ลายมือชื่อผู้รับเงิน</th>
+                            </tr>
+                            <tr id="summaryHeaderDates">
+                                <!-- Dynamic Dates 1-31 populated via JS -->
+                            </tr>
+                        </thead>
+                        <tbody id="summaryTableBody">
+                            <!-- Dynamic Staff Summary Rows -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" style="font-weight: bold;">รวมเงินทั้งสิ้น</td>
+                                <td colspan="31" id="bahtTextCell" style="font-weight: bold; text-align: center;">-</td>
+                                <td id="sumTotalDays" style="font-weight: bold;">๐</td>
+                                <td id="sumTotalBaht" style="font-weight: bold;">๐</td>
+                                <td id="sumTotalHours" style="font-weight: bold;">๐</td>
+                                <td id="sumGrandTotal" style="font-weight: bold;">๐</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="certification-note">
+                    จ่ายเงินแล้วถูกต้อง ตามเงินสุทธิย่อมจำนวนเงินข้างต้น
+                </div>
+
+                <!-- Official Signatures Tab 3 -->
+                <div class="official-signatures flex-4">
+                    <div class="sig-block">
+                        <div class="sig-row">
+                            <span class="sig-prefix">(ลงชื่อ)</span>
+                            <div class="sig-center-box">
+                                <span class="sig-dots">...................................</span>
+                                <p class="sig-name">(นางสาวพัชรี ภูธร)</p>
+                                <p class="sig-title">นักวิชาการสาธารณสุขชำนาญการ</p>
+                            </div>
+                            <span class="sig-role">ผู้จัดทำ</span>
+                        </div>
+                    </div>
+
+                    <div class="sig-block">
+                        <div class="sig-row">
+                            <span class="sig-prefix">(ลงชื่อ)</span>
+                            <div class="sig-center-box">
+                                <span class="sig-dots">...................................</span>
+                                <p class="sig-name">(นายพนิต เกตุทอง)</p>
+                                <p class="sig-title">ผู้ช่วยสาธารณสุขอำเภอตาลสุม</p>
+                            </div>
+                            <span class="sig-role">ผู้ตรวจทาน</span>
+                        </div>
+                    </div>
+
+                    <div class="sig-block">
+                        <div class="sig-row">
+                            <span class="sig-prefix">(ลงชื่อ)</span>
+                            <div class="sig-center-box">
+                                <span class="sig-dots">...................................</span>
+                                <p class="sig-name">(นายอุทยาน จันทรโสภา)</p>
+                                <p class="sig-title">สาธารณสุขอำเภอตาลสุม</p>
+                            </div>
+                            <span class="sig-role">ผู้อนุมัติ</span>
+                        </div>
+                    </div>
+
+                    <div class="sig-block">
+                        <div class="sig-row">
+                            <span class="sig-prefix">(ลงชื่อ)</span>
+                            <div class="sig-center-box">
+                                <span class="sig-dots">...................................</span>
+                                <p class="sig-name">(นางสาววันเพ็ญ จันทาโย)</p>
+                                <p class="sig-title">เจ้าพนักงานการเงินและบัญชี</p>
+                            </div>
+                            <span class="sig-role">ผู้จ่ายเงิน</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="official-footer-note">
+                    <strong>หมายเหตุ</strong> วันทำการอยู่ปฏิบัติงาน ตั้งแต่เวลา ๑๖.๓๐-๑๘.๓๐ น. = ๒ ชม.ๆละ๕๐บาท
+                    วันหยุดราชการ อยู่ปฏิบัติงาน ตั้งแต่เวลา ๐๘.๐๐-๑๒.๐๐ น. = ๔ ชม.ๆละ๖๐บาท (ระเบียบกระทรวงการคลัง
+                    ว่าด้วยการจ่ายค่าตอบแทน ๒๕๕๐)
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 4: Official Request Memorandum (บันทึกข้อความขออนุมัติ) -->
+        <section id="tab-memo" class="tab-content">
+            <div class="card no-print">
+                <div class="card-header">
+                    <div>
+                        <h2>บันทึกข้อความ - ขออนุมัติอยู่ปฏิบัติราชการนอกเวลาราชการ</h2>
+                        <p class="subtitle">ปรับแก้ไขเลขที่หนังสือ วันที่เสนอ
+                            และผู้รับรองการปฏิบัติงานได้ที่ช่องด้านล่าง</p>
+                    </div>
+                </div>
+                <div class="card-actions"
+                    style="margin-top: 10px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                    <div>
+                        <label for="memoDocNo">เลขที่หนังสือ:</label>
+                        <input type="text" id="memoDocNo" class="form-select" value="อบ ๐๘๓๓ /" style="width: 140px;"
+                            onchange="app.renderMemoDoc()">
+                    </div>
+                    <div>
+                        <label for="memoDocDate">ลงวันที่:</label>
+                        <input type="text" id="memoDocDate" class="form-select" value="๓๐ เดือน มิถุนายน พ.ศ.๒๕๖๙"
+                            style="width: 220px;" onchange="app.renderMemoDoc()">
+                    </div>
+                    <div>
+                        <label for="memoCertifierSelect">ผู้รับรองการปฏิบัติงาน:</label>
+                        <select id="memoCertifierSelect" class="form-select"
+                            onchange="app.renderMemoDoc(); app.renderReportDoc();">
+                            <!-- Populated dynamically via JS -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Printable Official Form 4: Garuda Official Memorandum -->
+            <div class="official-paper portrait-mode">
+                <!-- Header with Garuda Logo and Title -->
+                <div class="garuda-header">
+                    <div class="garuda-logo-box">
+                        <img src="krut.png" alt="ตราครุฑ" class="garuda-img">
+
+                    </div>
+                    <div class="memo-title">บันทึกข้อความ</div>
+                </div>
+
+                <!-- Header Metadata Rows -->
+                <div class="memo-header-fields">
+                    <div class="memo-row">
+                        <span class="bold-text">ส่วนราชการ</span>
+                        <span class="memo-value-text">สำนักงานสาธารณสุขอำเภอตาลสุม &nbsp;&nbsp;อำเภอตาลสุม
+                            &nbsp;&nbsp;จังหวัดอุบลราชธานี</span>
+                    </div>
+                    <div class="memo-row flex-split">
+                        <div style="width: 48%; text-align: left;">
+                            <span class="bold-text">ที่</span>
+                            <span id="memoDocNoText" class="memo-value-text">อบ ๐๘๓๓ /</span>
+                        </div>
+                        <div style="width: 52%; text-align: left;">
+                            <span class="bold-text">วันที่</span>
+                            <span id="memoDocDateText" class="memo-value-text">๓๐ เดือน มิถุนายน พ.ศ.๒๕๖๙</span>
+                        </div>
+                    </div>
+                    <div class="memo-row">
+                        <span class="bold-text">เรื่อง</span>
+                        <span class="memo-value-text">ขออนุมัติอยู่ปฏิบัติราชการนอกเวลาราชการประจำเดือน <span
+                                class="current-month-text">กรกฎาคม พ.ศ. ๒๕๖๙</span></span>
+                    </div>
+                </div>
+
+                <!-- Full Width Black Solid Line Divider below 'เรื่อง' -->
+                <div class="memo-divider"></div>
+
+                <!-- 'เรียน' in Normal Font BELOW the divider line -->
+                <div class="memo-row-reen">
+                    <span class="normal-text-reen">เรียน</span>
+                    <span class="memo-value-text">สาธารณสุขอำเภอตาลสุม</span>
+                </div>
+
+                <div class="memo-body-paragraph">
+                    <p>ด้วย กลุ่มงานบริหารและพัฒนายุทธศาสตร์ สำนักงานสาธารณสุขอำเภอตาลสุม
+                        มีงานในราชการจำเป็นที่ต้องปฏิบัติงานนอกเวลาราชการประจำเดือน <span
+                            class="current-month-text">กรกฎาคม พ.ศ. ๒๕๖๙</span> เพื่อวิเคราะห์ข้อมูลงานยุทธศาสตร์
+                        แผนปฏิบัติการ ติดตามควบคุมกำกับการดำเนินงาน รพ.สต./ข้อมูลพัฒนา รพ.สต. รูปแบบบริการฯ
+                        ให้ทันตามระยะเวลาที่กำหนด โดยขอปฏิบัติงานตั้งแต่วันที่ <span id="memoStartDateText">๑ กรกฎาคม
+                            ๒๕๖๙</span> ถึงวันที่ <span id="memoEndDateText">๓๑ กรกฎาคม ๒๕๖๙</span> ในวันทำการ เวลา
+                        ๑๖.๓๐ - ๑๘.๓๐ น. มีวันทำการ <span id="memoTotalWorkdaysText">๒๐</span> วัน รวม <span
+                            id="memoStaffCountText">๗</span> คน ตามตารางดังนี้</p>
+                </div>
+
+                <table class="official-table memo-table" id="memoStaffTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 30px;">ลำดับ</th>
+                            <th style="width: 140px;">ชื่อ - สกุล</th>
+                            <th style="width: 110px;">ตำแหน่ง</th>
+                            <th style="width: 130px;">งานในหน้าที่รับผิดชอบ</th>
+                            <th>เหตุผลความจำเป็นที่ต้องปฏิบัติงานนอกเวลาราชการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="memoStaffTableBody">
+                        <!-- Dynamic staff table rows populated via JS -->
+                    </tbody>
+                </table>
+
+                <!-- Certification Note -->
+                <div class="memo-cert-note">
+                    โดยมี <span class="bold-text" id="memoCertifierNameText">นางสาวพัชรี ภูธร</span>
+                    เป็นผู้รับรองการปฏิบัติ หรือกรณีมีผู้ปฏิบัติงานนอกเวลาราชการร่วมกันหลายคน
+                    ให้ผู้ปฏิบัติงานคนใดคนหนึ่งเป็นผู้รับรองการปฏิบัติงาน และหากเป็นการปฏิบัติงานเพียงลำพังคนเดียว
+                    ให้ผู้ปฏิบัติงานนั้นเป็นผู้รับรอง
+                </div>
+
+                <!-- Workflow Approval Section -->
+                <div class="memo-signatures-workflow">
+                    <!-- Proposal text on the LEFT side with paragraph indent -->
+                    <div class="memo-proposal-block">
+                        <p class="sig-proposal-text">จึงเรียนมาเพื่อโปรดพิจารณา</p>
+                    </div>
+
+                    <!-- Proposer signature block on the RIGHT side aligning with District Public Health Officer column -->
+                    <div class="memo-proposer-right">
+                        <div class="sig-space-4lines"></div>
+                        <p class="sig-name">(<span id="memoCertifierNameSub">นางสาวพัชรี ภูธร</span>)</p>
+                        <p class="sig-title"><span id="memoCertifierTitleSub">นักวิชาการสาธารณสุขชำนาญการ</span></p>
+                    </div>
+
+                    <div class="memo-approval-grid">
+                        <div class="memo-reviewer-left">
+                            <p class="bold-text-inline">- เห็นควรพิจารณาอนุมัติ</p>
+                            <div style="height: 3.2em;"></div>
+                            <p class="sig-name">(นายพนิต เกตุทอง)</p>
+                            <p class="sig-title">ผู้ช่วยสาธารณสุขอำเภอตาลสุม</p>
+                        </div>
+
+                        <!-- Right Approval Block shifted DOWN with Full Command Text -->
+                        <div class="memo-head-right">
+                            <p class="bold-text-inline">- คำสั่งและให้รายงานผลการปฏิบัติงาน<br>ภายใน ๑๕ วัน
+                                ตั้งแต่เสร็จงาน</p>
+                            <div class="checkbox-options">
+                                [ &nbsp; ] อนุมัติ
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                [ &nbsp; ] ไม่อนุมัติ
+                            </div>
+                            <div style="height: 3.4em;"></div>
+                            <p class="sig-name">(นายอุทยาน จันทรโสภา)</p>
+
+                            <p class="sig-title">สาธารณสุขอำเภอตาลสุม</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="official-footer-note">
+                    <strong>หมายเหตุ</strong> วันทำการอยู่ปฏิบัติงาน ตั้งแต่เวลา ๑๖.๓๐-๑๘.๓๐ น. = ๒ ชม.ๆละ๕๐บาท
+                    วันหยุดราชการ อยู่ปฏิบัติงาน ตั้งแต่เวลา ๐๘.๐๐-๑๒.๐๐ น. = ๔ ชม.ๆละ๖๐บาท (ระเบียบกระทรวงการคลัง
+                    ว่าด้วยการจ่ายค่าตอบแทน ๒๕๕๐)
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 5: OT Performance Report (แบบรายงานผล - เอกสารหมายเลข ๔) -->
+        <section id="tab-report" class="tab-content">
+            <div class="card no-print">
+                <div class="card-header">
+                    <div>
+                        <h2>แบบรายงานผลการปฏิบัติงานนอกเวลาราชการและวันหยุดราชการ (เอกสารหมายเลข ๔)</h2>
+                        <p class="subtitle">
+                            ระบบจะดึงข้อมูลสรุปการปฏิบัติงานจากตารางแผนปฏิบัติงานมาสรุปในเอกสารนี้โดยอัตโนมัติ</p>
+                    </div>
+                    <div>
+                        <label for="reportDocDate">ลงวันที่รายงานผล:</label>
+                        <input type="text" id="reportDocDate" class="form-select" value="๑ สิงหาคม ๒๕๖๙"
+                            style="width: 160px;" onchange="app.renderReportDoc()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Printable Official Form 5: Report Document -->
+            <div class="official-paper portrait-mode">
+                <div class="doc-corner-number">เอกสารหมายเลข ๔</div>
+
+                <div class="official-header" style="text-align: center; margin-bottom: 8px;">
+                    <h3 style="font-size: 15pt; font-weight: bold; margin-bottom: 8px;">
+                        แบบรายงานผลการปฏิบัติงานนอกเวลาราชการ</h3>
+                    <div style="text-align: right; margin-right: 2.0cm; font-size: 10.5pt; line-height: 1.4;">
+                        <p>ที่ทำการ สำนักงานสาธารณสุขอำเภอตาลสุม</p>
+                        <p>วันที่ <span id="reportDocDateText">๓ เดือน สิงหาคม พ.ศ.๒๕๖๙</span></p>
+                    </div>
+                </div>
+
+                <div class="memo-body-paragraph">
+                    <p
+                        style="text-indent: 2.5cm; margin-top: 6px; margin-bottom: 8px; font-size: 10.5pt; line-height: 1.4; text-align: justify;">
+                        ข้าพเจ้า <span id="reportCertifierNameText" style="font-weight: 500;">นางสาวพัชรี ภูธร</span>
+                        ตำแหน่ง <span id="reportCertifierTitleText">นักวิชาการสาธารณสุขชำนาญการ</span>
+                        ซึ่งได้รับอนุมัติให้ปฏิบัติงานนอกเวลาราชการปกติ ตามบันทึกที่ <span id="reportRefDocNo">อบ ๐๘๓๓
+                            /</span> ลงวันที่ <span id="reportRefDocDate">๓๐ มิถุนายน ๒๕๖๙</span>
+                        ขอทำรายงานผลการปฏิบัติงานนอกเวลาราชการ ประจำเดือน <span class="current-month-text">กรกฎาคม พ.ศ.
+                            ๒๕๖๙</span> ต่อสาธารณสุขอำเภอตาลสุม ดังต่อไปนี้
+                    </p>
+                </div>
+
+                <table class="official-table" id="reportStaffTable" style="margin-top: 6px; margin-bottom: 8px;">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" style="width: 35px; text-align: center; vertical-align: middle;">ลำดับ</th>
+                            <th rowspan="2"
+                                style="width: 145px; white-space: nowrap; text-align: center; vertical-align: middle;">
+                                ชื่อ - สกุล</th>
+                            <th rowspan="2" style="width: 180px; text-align: center; vertical-align: middle;">
+                                วันที่ที่ปฏิบัติงานนอกเวลา<br>ราชการ</th>
+                            <th colspan="2" style="text-align: center; vertical-align: middle; white-space: nowrap;">
+                                รวมวันปฏิบัติงาน</th>
+
+                            <th rowspan="2" style="width: 175px; text-align: center; vertical-align: middle;">
+                                ผลการปฏิบัติงาน</th>
+                            <th rowspan="2" style="width: 85px; text-align: center; vertical-align: middle;">ลายมือชื่อ
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="width: 45px; text-align: center; vertical-align: middle;">วันปกติ</th>
+                            <th style="width: 45px; text-align: center; vertical-align: middle;">วันหยุด</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="reportTableBody">
+                        <!-- Dynamic report rows populated via JS -->
+                    </tbody>
+                </table>
+
+                <div class="report-cert-line"
+                    style="margin-top: 14px; margin-bottom: 24px; font-weight: bold; text-align: center; font-size: 10.5pt;">
+                    ขอรับรองว่ารายงานผลการปฏิบัติงานข้างต้นเป็นความจริง
+                </div>
+
+                <!-- Official Signatures Layout matching Sample PDF -->
+                <div class="report-signatures-layout"
+                    style="display: flex; justify-content: space-between; font-size: 9.8pt; margin-top: 10px;">
+                    <!-- Left Column: Certifier & Reviewer -->
+                    <div style="width: 58%; display: flex; flex-direction: column; gap: 20px;">
+                        <!-- 1. Certifier Block -->
+                        <div style="padding-left: 1.0cm;">
+                            <p style="margin-bottom: 2px;">(ลงชื่อ)....................................................
+                                ผู้รับรองการปฏิบัติงาน</p>
+                            <p style="margin-left: 2.5cm; margin-bottom: 2px;">(<span
+                                    id="reportCertifierName">นางสาวพัชรี ภูธร</span>)</p>
+                            <p style="margin-left: 0.8cm;">ตำแหน่ง <span
+                                    id="reportCertifierTitle">นักวิชาการสาธารณสุขชำนาญการ</span></p>
+                        </div>
+
+                        <!-- 2. Reviewer Block -->
+                        <div style="padding-left: 1.0cm; margin-top: 10px;">
+                            <p style="margin-bottom: 2px;">(ลงชื่อ)....................................................
+                                ผู้ตรวจสอบ</p>
+                            <p style="margin-left: 2.5cm; margin-bottom: 2px;">(นายพนิต เกตุทอง)</p>
+                            <p style="margin-left: 0.8cm; margin-bottom: 2px;">ตำแหน่ง ผู้ช่วยสาธารณสุขอำเภอตาลสุม</p>
+                            <p style="margin-left: 2.0cm;">หัวหน้ากลุ่มงานบริหารทั่วไป</p>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: District Public Health Officer -->
+                    <div
+                        style="width: 40%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-top: 30px;">
+                        <p style="font-weight: bold; margin-bottom: 24px; font-size: 10.5pt;">ทราบ</p>
+                        <p style="margin-bottom: 2px;">(ลงชื่อ)....................................................</p>
+                        <p style="margin-bottom: 2px;">(นายอุทยาน จันทรโสภา)</p>
+                        <p>ตำแหน่ง สาธารณสุขอำเภอตาลสุม</p>
+                    </div>
+                </div>
+                <div class="official-footer-note">
+                    <strong>หมายเหตุ</strong> วันทำการอยู่ปฏิบัติงาน ตั้งแต่เวลา ๑๖.๓๐-๑๘.๓๐ น. = ๒ ชม.ๆละ๕๐บาท
+                    วันหยุดราชการ อยู่ปฏิบัติงาน ตั้งแต่เวลา ๐๘.๐๐-๑๒.๐๐ น. = ๔ ชม.ๆละ๖๐บาท (ระเบียบกระทรวงการคลัง
+                    ว่าด้วยการจ่ายค่าตอบแทน ๒๕๕๐)
+                </div>
+            </div>
+
+
+        </section>
+
+        <!-- Tab 6: Staff Management -->
+        <section id="tab-staff" class="tab-content">
+            <div class="card no-print">
+                <div class="card-header">
+                    <div>
+                        <h2>จัดการข้อมูลบุคลากรและเจ้าหน้าที่ (กลุ่มงานบริหารและพัฒนายุทธศาสตร์)</h2>
+                        <p class="subtitle">แสดงรายชื่อ ตำแหน่ง ประเภทบุคลากร งานในหน้าที่รับผิดชอบ
+                            และเหตุผลความจำเป็นในการปฏิบัติงานนอกเวลาราชการ</p>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-secondary" onclick="app.resetDefaultStaff()">🔄 คืนค่าตั้งต้น ๗
+                            ท่าน</button>
+                        <button class="btn btn-primary" onclick="app.openStaffModal()">➕ เพิ่มเจ้าหน้าที่ใหม่</button>
+                    </div>
+                </div>
+                <div class="table-responsive" style="margin-top: 10px;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 45px; text-align: center;">ลำดับ</th>
+                                <th style="width: 180px; white-space: nowrap;">ชื่อ - สกุล</th>
+                                <th style="width: 200px; white-space: nowrap;">ตำแหน่ง</th>
+                                <th style="width: 150px; text-align: center;">ประเภทบุคลากร</th>
+                                <th style="width: 220px;">งานในหน้าที่รับผิดชอบ</th>
+                                <th>เหตุผลความจำเป็นที่ต้องปฏิบัติงานนอกเวลาราชการ</th>
+                                <th style="width: 85px; text-align: center;">จัดการ</th>
+                            </tr>
+                        </thead>
+
+
+                        <tbody id="staffTableBody">
+                            <!-- Dynamic staff rows populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Interactive Modern Staff Modal Dialog -->
+    <div id="staffModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modalTitle">➕ เพิ่มเจ้าหน้าที่ใหม่</h3>
+                <button class="modal-close-btn" onclick="app.closeStaffModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="modalStaffId">
+                <div class="form-group">
+                    <label for="modalStaffName">ชื่อ - สกุล:</label>
+                    <input type="text" id="modalStaffName" class="form-input" placeholder="เช่น นางสาวพัชรี ภูธร">
+                </div>
+                <div class="form-group">
+                    <label for="modalStaffPosition">ตำแหน่ง:</label>
+                    <input type="text" id="modalStaffPosition" class="form-input"
+                        placeholder="เช่น นักวิชาการสาธารณสุขชำนาญการ">
+                </div>
+                <div class="form-group">
+                    <label for="modalStaffType">ประเภทบุคลากร:</label>
+                    <select id="modalStaffType" class="form-select" style="width: 100%;">
+                        <option value="GOVT">ข้าราชการ</option>
+                        <option value="STATE">พนักงานราชการ</option>
+                        <option value="MOH">พนักงานกระทรวงสาธารณสุข</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="modalStaffDutyName">งานในหน้าที่รับผิดชอบ:</label>
+                    <input type="text" id="modalStaffDutyName" class="form-input"
+                        placeholder="เช่น งานพัฒนายุทธศาสตร์สาธารณสุข">
+                </div>
+                <div class="form-group">
+                    <label for="modalStaffDutyReason">เหตุผลความจำเป็นที่ต้องปฏิบัติงานนอกเวลาราชการ:</label>
+                    <textarea id="modalStaffDutyReason" class="form-textarea" rows="3"
+                        placeholder="เช่น วิเคราะห์ข้อมูลงานยุทธศาสตร์ แผนปฏิบัติการ..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeStaffModal()">❌ ยกเลิก</button>
+                <button class="btn btn-primary" onclick="app.saveStaffFromModal()">💾 บันทึกข้อมูล</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Staff Modal -->
+    <div id="deleteModal" class="modal-overlay" style="display: none;">
+        <div class="modal-card" style="max-width: 440px;">
+            <div class="modal-header" style="background: #fef2f2; border-bottom-color: #fecaca;">
+                <h3 style="color: #dc2626;">🗑️ ยืนยันการลบข้อมูล</h3>
+                <button class="modal-close-btn" onclick="app.closeDeleteModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 24px; text-align: center;">
+                <input type="hidden" id="deleteStaffId">
+                <p style="font-size: 1.05rem; font-weight: 600; color: var(--text-primary);" id="deleteStaffNameText">
+                    คุณต้องการลบเจ้าหน้าที่ท่านนี้ใช่หรือไม่?</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">
+                    การลบนี้จะนำรายชื่อออกจากการคำนวณและเอกสารทุกหน้าในระบบ</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="app.closeDeleteModal()">❌ ยกเลิก</button>
+                <button class="btn btn-primary" style="background: #dc2626; border-color: #dc2626;"
+                    onclick="app.confirmDeleteStaff()">🗑️ ลบข้อมูล</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Excel Export Progress Modal Overlay -->
+    <div id="excelProgressModal" class="modal-overlay no-print" style="display: none; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 9999;">
+        <div class="modal-card" style="background: var(--bg-card, #ffffff); border-radius: 16px; width: 90%; max-width: 440px; text-align: center; padding: 30px 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2); border: 1px solid var(--border-color, #e2e8f0);">
+            <div id="excelProgressIcon" style="font-size: 2.8rem; margin-bottom: 12px; display: inline-block;">📊</div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary, #0f172a); margin-bottom: 6px;">กำลังสร้างไฟล์ Excel บัญชีลงเวลารายวัน...</h3>
+            <p id="excelProgressStatusText" style="font-size: 0.88rem; color: var(--text-muted, #64748b); margin-bottom: 22px; min-height: 1.3em;">กำลังเริ่มต้นเตรียมข้อมูล...</p>
+            
+            <!-- Progress Bar Outer Container -->
+            <div style="width: 100%; background: #e2e8f0; height: 14px; border-radius: 7px; overflow: hidden; margin-bottom: 12px; border: 1px solid #cbd5e1;">
+                <div id="excelProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #16a34a, #22c55e); transition: width 0.15s ease-out; border-radius: 7px;"></div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; font-size: 0.84rem; color: #475569; font-weight: 600;">
+                <span id="excelProgressDetailText">0 / 31 วัน</span>
+                <span id="excelProgressPercentText" style="color: #16a34a; font-weight: 700;">0%</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+
+</html>

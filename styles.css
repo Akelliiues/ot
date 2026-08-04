@@ -1,0 +1,1807 @@
+/* ==========================================================================
+   OT Management System - สำนักงานสาธารณสุขอำเภอตาลสุม
+   Design System: Fully Scoped Modular Tab Styling with Zero Collateral Leak
+   ========================================================================== */
+
+:root {
+    --font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+    /* Light Mode Palette (Default) */
+    --bg-app: #f1f5f9;
+    --bg-header: rgba(255, 255, 255, 0.88);
+    --bg-card: #ffffff;
+    --bg-card-subtle: #f8fafc;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --border-color: #cbd5e1;
+    --border-hover: #94a3b8;
+
+    /* Primary Accent */
+    --primary-color: #0284c7;
+    --primary-hover: #0369a1;
+    --primary-light: #e0f2fe;
+    --accent-teal: #0d9488;
+
+    /* Status Colors */
+    --success-bg: #dcfce7;
+    --success-text: #15803d;
+    --warning-bg: #fef3c7;
+    --warning-text: #b45309;
+    --info-bg: #e0f2fe;
+    --info-text: #0369a1;
+
+    /* Shadow Effects */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.06);
+    --glass-backdrop: blur(12px);
+
+    --transition-speed: 0.2s ease-in-out;
+}
+
+/* Dark Mode Tokens Override */
+body.dark-mode {
+    --bg-app: #0b0f19;
+    --bg-header: rgba(15, 23, 42, 0.88);
+    --bg-card: #1e293b;
+    --bg-card-subtle: #0f172a;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+    --border-hover: #475569;
+
+    --primary-color: #38bdf8;
+    --primary-hover: #0284c7;
+    --primary-light: rgba(56, 189, 248, 0.15);
+    --accent-teal: #2dd4bf;
+
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+    line-height: 1.5;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Sticky Top Header Bar */
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-header);
+    backdrop-filter: var(--glass-backdrop);
+    border-bottom: 1px solid var(--border-color);
+    padding: 8px 20px;
+}
+
+.header-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-teal));
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+}
+
+.brand-text h1 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.brand-text p {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.month-selector {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.form-select {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: 0.85rem;
+    font-weight: 500;
+    outline: none;
+    cursor: pointer;
+}
+
+/* Dark / Light Toggle Switch */
+.theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-card-subtle);
+    padding: 3px 8px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.theme-icon {
+    font-size: 0.85rem;
+    user-select: none;
+}
+
+.theme-switch {
+    display: inline-block;
+    height: 20px;
+    position: relative;
+    width: 40px;
+}
+
+.theme-switch input {
+    display: none;
+}
+
+.slider {
+    background-color: #cbd5e1;
+    bottom: 0;
+    cursor: pointer;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .3s;
+}
+
+.slider:before {
+    background-color: #fff;
+    bottom: 2px;
+    content: "";
+    height: 16px;
+    left: 2px;
+    position: absolute;
+    transition: .3s;
+    width: 16px;
+}
+
+input:checked+.slider {
+    background-color: var(--primary-color);
+}
+
+input:checked+.slider:before {
+    transform: translateX(20px);
+}
+
+.slider.round {
+    border-radius: 20px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-family: var(--font-family);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all var(--transition-speed);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-teal));
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.2);
+}
+
+.btn-secondary {
+    background-color: var(--bg-card-subtle);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+/* Sticky Nav Tabs Bar */
+.nav-tabs-container {
+    position: sticky;
+    top: 53px;
+    z-index: 99;
+    background-color: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.nav-tabs {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    gap: 4px;
+}
+
+.tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--text-muted);
+    font-family: var(--font-family);
+    font-size: 0.86rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-card-subtle);
+}
+
+.tab-btn.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+    background-color: var(--primary-light);
+}
+
+/* Main Layout */
+.main-content {
+    max-width: 1440px;
+    width: 100%;
+    margin: 16px auto;
+    padding: 0 16px;
+    flex: 1;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.card-header h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.subtitle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.badge {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-info {
+    background: var(--info-bg);
+    color: var(--info-text);
+}
+
+.badge-warning {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+}
+
+.badge-success {
+    background: var(--success-bg);
+    color: var(--success-text);
+}
+
+/* Common Paper Base */
+.official-paper {
+    background-color: #ffffff;
+    color: #000000;
+    padding: 18px 22px;
+    border-radius: 4px;
+    box-shadow: var(--shadow-md);
+    margin: 0 auto 20px auto;
+    border: 1px solid #cbd5e1;
+    font-family: 'Sarabun', sans-serif;
+    position: relative;
+}
+
+.portrait-mode {
+    max-width: 210mm;
+    min-height: 297mm;
+    padding: 2.5cm 2.0cm 1.5cm 2.5cm;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.landscape-mode {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.doc-corner-number {
+    position: absolute;
+    top: 14px;
+    right: 20px;
+    font-size: 11pt;
+    font-weight: bold;
+    color: #000;
+}
+
+.official-header {
+    text-align: center;
+    margin-bottom: 14px;
+}
+
+.official-header h3 {
+    font-size: 15pt;
+    font-weight: bold;
+    margin-bottom: 2px;
+    color: #000;
+}
+
+.official-header h4 {
+    font-size: 13.5pt;
+    font-weight: normal;
+    color: #000;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.official-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 6px;
+    font-size: 9pt;
+    line-height: 1.25;
+}
+
+.official-table th,
+.official-table td {
+    border: 0.5px solid #000000 !important;
+    padding: 3px 2px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+
+.official-table th {
+    background-color: #f8fafc;
+    font-weight: bold;
+    color: #000;
+    font-size: 9pt;
+}
+
+.print-only-row {
+    display: none !important;
+}
+
+.dotted-count-inline {
+    display: inline-block;
+    border-bottom: none !important;
+    font-weight: bold;
+    letter-spacing: 0.2px;
+}
+
+/* ==========================================================================
+   TAB 1: WORK PLAN MATRIX (#tab-plan) - INDEPENDENT SCOPE
+   ========================================================================== */
+
+#tab-plan .plan-matrix-table {
+    table-layout: auto !important;
+    width: 100% !important;
+}
+
+#tab-plan .date-col {
+    min-width: 18px !important;
+    width: 20px !important;
+    text-align: center !important;
+    padding: 2px 0 !important;
+    font-size: 7.5pt !important;
+}
+
+#tab-plan .summary-subcol {
+    min-width: 44px !important;
+    font-size: 7.8pt !important;
+    white-space: nowrap !important;
+    padding: 2px 2px !important;
+    letter-spacing: -0.2px !important;
+    font-weight: bold !important;
+}
+
+#tab-plan .plan-matrix-table td:nth-child(3) {
+    white-space: nowrap !important;
+    font-size: 8.0pt !important;
+    padding: 2.5px 3px !important;
+}
+
+#tab-plan .plan-matrix-table td.day-cell {
+    cursor: pointer;
+    font-weight: bold;
+    user-select: none;
+    font-size: 8.5pt;
+}
+
+#tab-plan .plan-matrix-table td.day-cell.selected-weekday {
+    background-color: #bae6fd;
+    color: #0369a1;
+}
+
+#tab-plan .plan-matrix-table td.day-cell.selected-holiday {
+    background-color: #fef08a;
+    color: #a16207;
+}
+
+#tab-plan .official-signatures {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 24px;
+    gap: 4px;
+    font-size: 9pt;
+    color: #000000;
+    width: 100%;
+}
+
+#tab-plan .sig-block {
+    width: 33%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#tab-plan .sig-row {
+    display: flex;
+    align-items: flex-start;
+    white-space: nowrap;
+    justify-content: center;
+    width: 100%;
+}
+
+#tab-plan .sig-prefix {
+    font-size: 9pt;
+    padding-top: 1px;
+}
+
+#tab-plan .sig-center-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin: 0 1px;
+}
+
+#tab-plan .sig-dots {
+    font-size: 9pt;
+}
+
+#tab-plan .sig-name {
+    margin-top: 3px;
+    font-size: 9pt;
+    text-align: center;
+}
+
+#tab-plan .sig-title {
+    margin-top: 1px;
+    font-size: 8.5pt;
+    text-align: center;
+}
+
+#tab-plan .sig-role {
+    font-size: 8.8pt;
+    padding-top: 1px;
+}
+
+/* Note row spaced 3 lines away below signatures (สาธารณสุขอำเภอ) */
+#tab-plan .official-footer-note {
+    font-size: 9pt;
+    margin-top: 3.0em !important;
+    border-top: 1px solid #64748b;
+    padding-top: 6px;
+    color: #000;
+}
+
+/* ==========================================================================
+   TAB 2: DAILY SIGN-IN LOG (#tab-daily) - INDEPENDENT SCOPE
+   ========================================================================== */
+
+#tab-daily .daily-table th {
+    font-size: 8.2pt !important;
+    padding: 3px 2px !important;
+}
+
+#tab-daily .daily-table td {
+    font-size: 8.0pt !important;
+    padding: 2.5px 2px !important;
+}
+
+#tab-daily .daily-table td:nth-child(3) {
+    white-space: nowrap !important;
+    font-size: 8.0pt !important;
+    padding: 2.5px 3px !important;
+}
+
+#tab-daily .daily-form-footer {
+    margin-top: 14px;
+    font-size: 10pt;
+    color: #000;
+}
+
+#tab-daily .summary-counts {
+    margin: 12px 0;
+    line-height: 1.8;
+}
+
+#tab-daily .supervisor-sig-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+    padding-right: 20px;
+    font-size: 10pt;
+    color: #000;
+}
+
+#tab-daily .supervisor-sig-wrapper.margin-down-2rows {
+    margin-top: 55px;
+}
+
+#tab-daily .supervisor-sig-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#tab-daily .supervisor-sig-box .sig-line {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+#tab-daily .supervisor-sig-box .sig-label {
+    display: inline-block;
+    width: 54px;
+    text-align: right;
+    margin-right: 6px;
+}
+
+/* ==========================================================================
+   TAB 3: PAYMENT SUMMARY (#tab-summary) - INDEPENDENT SCOPE
+   ========================================================================== */
+
+#tab-summary .summary-table {
+    table-layout: auto !important;
+    width: 100% !important;
+}
+
+#tab-summary .date-col {
+    min-width: 18px !important;
+    width: 20px !important;
+    text-align: center !important;
+    padding: 2px 0 !important;
+    font-size: 7.5pt !important;
+}
+
+#tab-summary .summary-subcol {
+    min-width: 44px !important;
+    font-size: 7.8pt !important;
+    white-space: nowrap !important;
+    padding: 2px 2px !important;
+    letter-spacing: -0.2px !important;
+    font-weight: bold !important;
+}
+
+#tab-summary .summary-total-outside {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 36px;
+    margin-top: 6px;
+    margin-bottom: 10px;
+    padding-right: 140px;
+    font-size: 9.5pt;
+    color: #000000;
+}
+
+#tab-summary .total-label-text {
+    font-weight: bold;
+    font-size: 9.5pt;
+}
+
+#tab-summary .baht-text-styled {
+    font-weight: normal;
+    font-size: 9.5pt;
+}
+
+#tab-summary .certification-note {
+    font-size: 10pt;
+    margin-top: 14px;
+    font-weight: normal;
+    color: #000;
+}
+
+#tab-summary .official-signatures {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 24px;
+    gap: 4px;
+    font-size: 9pt;
+    color: #000000;
+    width: 100%;
+}
+
+#tab-summary .sig-block {
+    width: 24.5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#tab-summary .sig-row {
+    display: flex;
+    align-items: flex-start;
+    white-space: nowrap;
+    justify-content: center;
+    width: 100%;
+}
+
+#tab-summary .sig-prefix {
+    font-size: 9pt;
+    padding-top: 1px;
+}
+
+#tab-summary .sig-center-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin: 0 1px;
+}
+
+#tab-summary .sig-dots {
+    font-size: 9pt;
+}
+
+#tab-summary .sig-name {
+    margin-top: 3px;
+    font-size: 9pt;
+    text-align: center;
+}
+
+#tab-summary .sig-title {
+    margin-top: 1px;
+    font-size: 8.5pt;
+    text-align: center;
+}
+
+#tab-summary .sig-role {
+    font-size: 8.8pt;
+    padding-top: 1px;
+}
+
+/* Note row spaced 3 lines away below signatures (สาธารณสุขอำเภอ) */
+#tab-summary .official-footer-note {
+    font-size: 9pt;
+    margin-top: 3.0em !important;
+    border-top: 1px solid #64748b;
+    padding-top: 6px;
+    color: #000;
+}
+
+/* ==========================================================================
+   TAB 4: GARUDA MEMORANDUM (#tab-memo) - INDEPENDENT SCOPE
+   ========================================================================== */
+
+#tab-memo .portrait-mode {
+    padding: 3.0cm 2.0cm 1.5cm 2.5cm !important;
+}
+
+
+#tab-memo .garuda-header {
+    position: relative;
+    margin-top: 0px;
+    margin-bottom: 4px !important;
+    min-height: 1.5cm !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Garuda Emblem positioned top-left shifted UP to create clean clearance above text */
+#tab-memo .garuda-logo-box {
+    position: absolute;
+    left: 0;
+    top: -0.5cm !important;
+}
+
+#tab-memo .garuda-img {
+    height: 2.0cm !important;
+    width: auto;
+    display: block;
+}
+
+
+
+/* Title "บันทึกข้อความ" centered */
+#tab-memo .memo-title {
+    font-size: 18pt !important;
+    font-weight: bold !important;
+    text-align: center;
+    color: #000;
+    letter-spacing: 0.5px;
+    line-height: 1.5cm !important;
+    padding-top: 0 !important;
+    margin-bottom: 0px !important;
+}
+
+
+
+
+
+
+/* "ส่วนราชการ..." below Garuda header */
+#tab-memo .memo-header-fields {
+    font-size: 10.5pt !important;
+    color: #000;
+    margin-top: 4px !important;
+    margin-bottom: 1px;
+    line-height: 1.25;
+}
+
+#tab-memo .memo-header-fields .bold-text {
+    font-size: 10.8pt !important;
+    font-weight: bold !important;
+    margin-right: 0.3cm;
+}
+
+#tab-memo .memo-header-fields .memo-value-text {
+    font-size: 10.5pt !important;
+    font-weight: normal !important;
+}
+
+#tab-memo .memo-row {
+    margin-bottom: 1px;
+    display: flex;
+    align-items: baseline;
+    line-height: 1.25;
+}
+
+#tab-memo .memo-row.flex-split {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Full Width Divider below 'เรื่อง' */
+#tab-memo .memo-divider {
+    border: none;
+    border-top: 1.2px solid #000000;
+    margin: 2px 0 2px 0;
+}
+
+/* 'เรียน' shifted DOWN 1.5 lines below the divider line */
+#tab-memo .memo-row-reen {
+    margin-top: 1.5em !important;
+    margin-bottom: 2px;
+    font-size: 10.5pt !important;
+    color: #000;
+    display: flex;
+    align-items: baseline;
+    line-height: 1.25;
+}
+
+#tab-memo .normal-text-reen {
+    font-size: 10.5pt !important;
+    font-weight: normal !important;
+    margin-right: 0.3cm;
+}
+
+#tab-memo .memo-body-paragraph {
+    font-size: 10.5pt !important;
+    line-height: 1.38;
+    color: #000;
+    text-align: justify;
+    text-justify: inter-cluster;
+    margin-top: 0.4em !important;
+    margin-bottom: 4px;
+}
+
+#tab-memo .memo-body-paragraph p {
+    text-indent: 2.5cm !important;
+    font-size: 10.5pt !important;
+}
+
+/* Neat compact table font size */
+#tab-memo .memo-table th,
+#tab-memo .memo-table td {
+    font-size: 8.0pt !important;
+    padding: 2px 3px !important;
+    line-height: 1.2;
+}
+
+/* Entire set starting from memo-cert-note shifted DOWN by 3 rows */
+#tab-memo .memo-cert-note {
+    font-size: 9.2pt !important;
+    line-height: 1.3;
+    margin-top: 3.0em !important;
+    text-indent: 2.5cm !important;
+    text-align: justify;
+}
+
+#tab-memo .sig-space-4lines {
+    height: 1.5em !important;
+}
+
+/* Proposal Text 'จึงเรียนมาเพื่อโปรดพิจารณา' on Left with Paragraph Indent */
+#tab-memo .sig-proposal-text {
+    font-size: 10.5pt !important;
+    color: #000;
+    text-align: left !important;
+    width: 100% !important;
+    padding-left: 2.5cm !important;
+    margin-bottom: 2px !important;
+}
+
+#tab-memo .sig-name,
+#tab-memo .sig-title {
+    font-size: 9.2pt !important;
+    font-weight: normal !important;
+    line-height: 1.2;
+}
+
+#tab-memo .bold-text-inline {
+    font-size: 10.0pt !important;
+    font-weight: bold !important;
+}
+
+#tab-memo .checkbox-options {
+    margin: 3px 0 5px 0 !important;
+    font-size: 9.5pt !important;
+    font-weight: normal !important;
+    text-align: center !important;
+}
+
+#tab-memo .memo-signatures-workflow {
+    margin-top: 4px;
+    font-size: 9.2pt;
+    color: #000;
+    width: 100%;
+}
+
+/* Proposer Signature Block shifted DOWN 2 lines after 'จึงเรียนมาเพื่อโปรดพิจารณา' */
+#tab-memo .memo-proposer-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-left: auto;
+    width: 50%;
+    margin-top: 2.0em !important;
+    margin-bottom: 6px;
+}
+
+#tab-memo .memo-approval-grid {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 3px;
+    font-size: 9.2pt;
+    color: #000;
+}
+
+#tab-memo .memo-reviewer-left {
+    width: 48%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* Right Approval Block shifted UP by 1 line (margin-top: 3.3em) */
+#tab-memo .memo-head-right {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 3.3em !important;
+}
+
+/* Note row in Tab 4 spaced 3 lines away below District Public Health Officer (สาธารณสุขอำเภอ) */
+#tab-memo .official-footer-note {
+    margin-top: 3.0em !important;
+    padding-top: 4px !important;
+    font-size: 8.0pt !important;
+    border-top: none !important;
+}
+
+/* ==========================================================================
+   TAB 5: OT PERFORMANCE REPORT - DOC 4 (#tab-report) - INDEPENDENT SCOPE
+   ========================================================================== */
+
+#tab-report .portrait-mode {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 27.5cm !important;
+}
+
+#tab-report .official-footer-note {
+    margin-top: auto !important;
+    padding-top: 6px !important;
+    border-top: 1px solid #000 !important;
+    font-size: 8.0pt !important;
+    color: #000;
+}
+
+#tab-report .report-cert-line {
+
+    text-align: center;
+    margin-top: 16px;
+    margin-bottom: 22px;
+    font-size: 9.5pt !important;
+    font-weight: normal !important;
+    color: #000;
+}
+
+#tab-report .report-signatures-layout {
+    margin-top: 55px;
+    font-size: 9.5pt;
+    color: #000000;
+    width: 100%;
+}
+
+#tab-report .report-sig-top,
+#tab-report .report-sig-left {
+    width: 48% !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    padding-left: 75px !important;
+    margin-left: 0 !important;
+}
+
+#tab-report .report-sig-top .sig-row,
+#tab-report .report-sig-left .sig-row {
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+}
+
+#tab-report .report-sig-top {
+    margin-bottom: 35px;
+}
+
+#tab-report .report-sig-bottom.margin-down-3rows {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    margin-top: 85px;
+}
+
+#tab-report .report-sig-right {
+    width: 48%;
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 80px;
+}
+
+#tab-report .bold-trab-title {
+    font-weight: bold !important;
+    font-size: 10.5pt !important;
+    margin-bottom: 50px !important;
+    color: #000000;
+}
+
+#tab-report .official-footer-note {
+    font-size: 9pt;
+    margin-top: 3.0em !important;
+    border-top: 1px solid #64748b;
+    padding-top: 6px;
+    color: #000;
+}
+
+/* ==========================================================================
+   TAB 6: STAFF MANAGEMENT (#tab-staff) - INDEPENDENT SCOPE
+   ========================================================================== */
+
+#tab-staff .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 0.88rem;
+}
+
+#tab-staff .data-table th,
+#tab-staff .data-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+}
+
+#tab-staff .data-table th {
+    background-color: var(--bg-card-subtle);
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   MODAL DIALOG COMPONENT (NEW)
+   ========================================================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.modal-card {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 540px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: modalFadeIn 0.25s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-card-subtle);
+}
+
+.modal-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.modal-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.modal-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+}
+
+.form-group label {
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.form-input,
+.form-textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 12px 20px;
+    background: var(--bg-card-subtle);
+    border-top: 1px solid var(--border-color);
+}
+
+/* ==========================================================================
+   OPTIMIZED PRINT LAYOUT (@media print) - STRICTLY SCOPED PER TAB
+   ========================================================================== */
+
+@media print {
+
+    /* ===== A4 Page Setup: ระเบียบสำนักนายกฯ ว่าด้วยงานสารบรรณ =====
+       บน 3cm | ซ้าย 3cm | ล่าง 2cm | ขวา 2cm  */
+    @page {
+        size: A4 portrait;
+        margin: 3cm 2cm 2cm 3cm;
+    }
+
+    .no-print,
+    .app-header,
+    .nav-tabs-container,
+    .card,
+    .modal-overlay {
+        display: none !important;
+    }
+
+    html,
+    body {
+        height: auto !important;
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .main-content {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+    }
+
+    .tab-content {
+        display: none !important;
+    }
+
+    .tab-content.active {
+        display: block !important;
+        width: 100% !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    .portrait-mode {
+        min-height: 0 !important;
+        height: auto !important;
+        padding: 0 !important;
+    }
+
+    /* Tab 5: Flexbox portrait layout — padding comes from @page margins (no extra padding needed) */
+    #tab-report .portrait-mode {
+        display: flex !important;
+        flex-direction: column !important;
+        min-height: 0 !important;
+        height: auto !important;
+    }
+
+    .official-paper {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+        overflow: visible !important;
+    }
+
+    /* Tab 5: @page handles outer margin; give paper no extra padding but keep relative for absolute children */
+    #tab-report.tab-content .official-paper.portrait-mode {
+        padding: 0 !important;
+        position: relative !important;
+    }
+
+    /* Tab 5: doc-corner-number pinned to top-right within page margin */
+    #tab-report .doc-corner-number {
+        position: absolute !important;
+        top: 0 !important;
+        right: 0 !important;
+        font-size: 10pt !important;
+        font-weight: bold !important;
+    }
+
+
+    .official-table {
+        border-collapse: collapse !important;
+    }
+
+    .official-table th,
+    .official-table td {
+        border: 0.4pt solid #000000 !important;
+    }
+
+
+    .official-header {
+        margin-bottom: 8px !important;
+        text-align: center !important;
+    }
+
+    .official-header h3 {
+        font-size: 13.5pt !important;
+    }
+
+    .official-header h4 {
+        font-size: 11.5pt !important;
+    }
+
+    .print-only-row {
+        display: table-row !important;
+        height: 20px !important;
+    }
+
+    /* Print Scope: Tab 1 (#tab-plan) - Note row spaced 3 lines away below signatures (สาธารณสุขอำเภอ) */
+    #tab-plan .plan-matrix-table {
+        table-layout: auto !important;
+        width: 100% !important;
+    }
+
+    #tab-plan .official-table th,
+    #tab-plan .official-table td {
+        padding: 2px 0.5px !important;
+        font-size: 7.1pt !important;
+        border: 0.4pt solid #000000 !important;
+    }
+
+
+    #tab-plan .date-col {
+        min-width: 17px !important;
+        width: 18px !important;
+        text-align: center !important;
+        padding: 2px 0 !important;
+        font-size: 7.1pt !important;
+    }
+
+    #tab-plan .summary-subcol {
+        min-width: 44px !important;
+        font-size: 7.2pt !important;
+        white-space: nowrap !important;
+        padding: 2px 1px !important;
+        letter-spacing: -0.2px !important;
+        font-weight: bold !important;
+    }
+
+    #tab-plan .plan-matrix-table td:nth-child(3) {
+        font-size: 7.0pt !important;
+        padding: 2px 2px !important;
+    }
+
+    #tab-plan .official-signatures {
+        margin-top: 14px !important;
+        font-size: 7.5pt !important;
+        page-break-inside: avoid !important;
+        width: 100% !important;
+    }
+
+    #tab-plan .sig-dots,
+    #tab-plan .sig-name,
+    #tab-plan .sig-title,
+    #tab-plan .sig-role,
+    #tab-plan .sig-prefix {
+        font-size: 7.5pt !important;
+    }
+
+    #tab-plan .official-footer-note {
+        font-size: 7.0pt !important;
+        margin-top: 3.0em !important;
+        padding-top: 4px !important;
+        width: 100% !important;
+    }
+
+    /* Print Scope: Tab 2 (#tab-daily) */
+    #tab-daily {
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+    }
+
+    #tab-daily .official-paper {
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+    }
+
+    #tab-daily .daily-table {
+        font-size: 8.0pt !important;
+        width: 100% !important;
+    }
+
+    #tab-daily .daily-table th {
+        font-size: 8.0pt !important;
+        padding: 2.5px 2px !important;
+    }
+
+    #tab-daily .daily-table td {
+        font-size: 7.8pt !important;
+        padding: 2px 2px !important;
+        height: 20px !important;
+    }
+
+    #tab-daily .daily-form-footer {
+        margin-top: 8px !important;
+        font-size: 8.5pt !important;
+    }
+
+    #tab-daily .supervisor-sig-wrapper.margin-down-2rows {
+        margin-top: 30px !important;
+    }
+
+    /* Print Scope: Tab 3 (#tab-summary) - Note row spaced 3 lines away below signatures (สาธารณสุขอำเภอ) */
+    #tab-summary .summary-table {
+        table-layout: auto !important;
+        width: 100% !important;
+    }
+
+    #tab-summary .official-table th,
+    #tab-summary .official-table td {
+        padding: 2px 0.5px !important;
+        font-size: 7.1pt !important;
+        border: 1px solid #000000 !important;
+    }
+
+    #tab-summary .date-col {
+        min-width: 17px !important;
+        width: 18px !important;
+        text-align: center !important;
+        padding: 2px 0 !important;
+        font-size: 7.1pt !important;
+    }
+
+    #tab-summary .summary-subcol {
+        min-width: 44px !important;
+        font-size: 7.2pt !important;
+        white-space: nowrap !important;
+        padding: 2px 1px !important;
+        letter-spacing: -0.2px !important;
+        font-weight: bold !important;
+    }
+
+    #tab-summary .summary-total-outside {
+        margin-top: 4px !important;
+        margin-bottom: 8px !important;
+        padding-right: 120px !important;
+        font-size: 8.5pt !important;
+    }
+
+    #tab-summary .total-label-text,
+    #tab-summary .baht-text-styled {
+        font-size: 8.5pt !important;
+    }
+
+    #tab-summary .official-signatures {
+        margin-top: 14px !important;
+        font-size: 7.5pt !important;
+        page-break-inside: avoid !important;
+        width: 100% !important;
+    }
+
+    #tab-summary .sig-dots,
+    #tab-summary .sig-name,
+    #tab-summary .sig-title,
+    #tab-summary .sig-role,
+    #tab-summary .sig-prefix {
+        font-size: 7.5pt !important;
+    }
+
+    #tab-summary .official-footer-note {
+        font-size: 7.0pt !important;
+        margin-top: 3.0em !important;
+        padding-top: 4px !important;
+        width: 100% !important;
+    }
+
+    /* Print Scope: Tab 4 (#tab-memo) - Proposer signature block shifted DOWN 2 lines after 'จึงเรียนมาเพื่อโปรดพิจารณา' */
+    #tab-memo .portrait-mode {
+        display: flex !important;
+        flex-direction: column !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        margin-top: 0.5cm !important;
+    }
+
+
+    #tab-memo .garuda-header {
+        margin-top: 0px !important;
+        margin-bottom: 4px !important;
+        min-height: 1.5cm !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    #tab-memo .garuda-logo-box {
+        top: -0.5cm !important;
+    }
+
+
+    #tab-memo .garuda-img {
+        height: 2.0cm !important;
+    }
+
+
+    #tab-memo .memo-title {
+        font-size: 18pt !important;
+        font-weight: bold !important;
+        padding-top: 0 !important;
+        margin-bottom: 0px !important;
+        line-height: 1.5cm !important;
+    }
+
+
+
+
+
+
+    #tab-memo .memo-header-fields {
+        font-size: 10.5pt !important;
+        line-height: 1.25 !important;
+        margin-top: 4px !important;
+        margin-bottom: 1px !important;
+    }
+
+    #tab-memo .memo-header-fields .bold-text {
+        font-size: 10.8pt !important;
+        font-weight: bold !important;
+    }
+
+    #tab-memo .memo-header-fields .memo-value-text {
+        font-size: 10.5pt !important;
+        font-weight: normal !important;
+    }
+
+    #tab-memo .memo-row {
+        margin-bottom: 1px !important;
+        line-height: 1.25 !important;
+    }
+
+    #tab-memo .memo-divider {
+        margin: 2px 0 2px 0 !important;
+    }
+
+    #tab-memo .memo-row-reen {
+        font-size: 10.5pt !important;
+        margin-top: 1.5em !important;
+        margin-bottom: 2px !important;
+        line-height: 1.25 !important;
+    }
+
+    #tab-memo .normal-text-reen {
+        font-size: 10.5pt !important;
+        font-weight: normal !important;
+    }
+
+    #tab-memo .memo-body-paragraph {
+        font-size: 10.5pt !important;
+        line-height: 1.38 !important;
+        margin-top: 0.4em !important;
+        margin-bottom: 4px !important;
+    }
+
+    #tab-memo .memo-body-paragraph p {
+        font-size: 10.5pt !important;
+        text-indent: 2.5cm !important;
+    }
+
+    #tab-memo .memo-table th,
+    #tab-memo .memo-table td {
+        padding: 2px 3px !important;
+        font-size: 7.8pt !important;
+    }
+
+    #tab-memo .memo-cert-note {
+        font-size: 9.0pt !important;
+        margin-top: 3.0em !important;
+        line-height: 1.3 !important;
+        text-indent: 2.5cm !important;
+    }
+
+    #tab-memo .memo-signatures-workflow {
+        margin-top: 4px !important;
+        font-size: 9.2pt !important;
+    }
+
+    #tab-memo .sig-space-4lines {
+        height: 1.5em !important;
+    }
+
+    #tab-memo .sig-name,
+    #tab-memo .sig-title {
+        font-size: 9.2pt !important;
+        font-weight: normal !important;
+    }
+
+    #tab-memo .sig-proposal-text {
+        font-size: 10.5pt !important;
+        padding-left: 2.5cm !important;
+    }
+
+    #tab-memo .bold-text-inline {
+        font-size: 10.0pt !important;
+        font-weight: bold !important;
+    }
+
+    #tab-memo .checkbox-options {
+        font-size: 9.5pt !important;
+        margin: 3px 0 5px 0 !important;
+        text-align: center !important;
+    }
+
+    #tab-memo .memo-proposer-right {
+        width: 50% !important;
+        margin-left: auto !important;
+        margin-top: 2.0em !important;
+        margin-bottom: 6px !important;
+    }
+
+    #tab-memo .memo-head-right {
+        margin-top: 3.3em !important;
+    }
+
+    #tab-memo .memo-head-right div[style*="height"] {
+        height: 4.4em !important;
+    }
+
+
+    #tab-memo .official-footer-note {
+        margin-top: 3.0em !important;
+        padding-top: 4px !important;
+        font-size: 8.0pt !important;
+        border-top: none !important;
+    }
+
+    /* ===== Print Scope: Tab 5 (#tab-report) ===== */
+
+    /* Header: title + date/place block */
+    #tab-report .official-header {
+        margin-bottom: 6px !important;
+        text-align: center !important;
+    }
+
+    #tab-report .official-header h3 {
+        font-size: 14pt !important;
+        font-weight: bold !important;
+        margin-top: 3.6em !important;
+        margin-bottom: 4px !important;
+    }
+
+    /* Right-aligned place/date block inside header */
+    #tab-report .official-header > div {
+        font-size: 10pt !important;
+        line-height: 1.4 !important;
+        margin-right: 0 !important;
+    }
+
+    /* Intro paragraph */
+    #tab-report .memo-body-paragraph p,
+    #tab-report .memo-body-paragraph {
+        font-size: 10pt !important;
+        line-height: 1.5 !important;
+        margin-top: 4px !important;
+        margin-bottom: 6px !important;
+        text-indent: 2.5cm !important;
+        text-align: justify !important;
+    }
+
+    /* Main data table */
+    #tab-report .official-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        margin-top: 4px !important;
+        margin-bottom: 6px !important;
+    }
+
+    #tab-report .official-table th,
+    #tab-report .official-table td {
+        border: 0.4pt solid #000 !important;
+        padding: 3px 2px !important;
+        font-size: 9pt !important;
+        vertical-align: middle !important;
+    }
+
+    #tab-report .official-table th {
+        font-size: 9pt !important;
+        font-weight: bold !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+    }
+
+    /* Certification line */
+    #tab-report .report-cert-line {
+        margin-top: 10px !important;
+        margin-bottom: 12px !important;
+        font-size: 10pt !important;
+        font-weight: bold !important;
+        text-align: center !important;
+    }
+
+    /* Signatures block */
+    #tab-report .report-signatures-layout {
+        display: flex !important;
+        justify-content: space-between !important;
+        margin-top: 14px !important;
+        margin-bottom: 0 !important;
+        font-size: 10pt !important;
+        page-break-inside: avoid !important;
+    }
+
+    #tab-report .report-signatures-layout > div:first-child {
+        width: 58% !important;
+    }
+
+    #tab-report .report-signatures-layout > div:last-child {
+        width: 40% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        padding-top: 0 !important;
+    }
+
+    /* Footer note — 5 lines gap below signatures, then pushed to bottom */
+    #tab-report .official-footer-note {
+        font-size: 8pt !important;
+        margin-top: auto !important;
+        padding-top: 6.0em !important;
+        border-top: none !important;
+        width: 100% !important;
+        display: block !important;
+        position: relative !important;
+    }
+
+    /* Draw the border line above the footer text, offset by the padding gap */
+    #tab-report .official-footer-note::before {
+        content: '' !important;
+        display: block !important;
+        border-top: 0.5pt solid #000 !important;
+        position: absolute !important;
+        top: 6.0em !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+
+}
+
+/* Action Icon Buttons for Staff Table */
+.btn-action-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background-color: #ffffff;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.btn-action-icon.edit-btn {
+    color: #2563eb;
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+.btn-action-icon.edit-btn:hover {
+    background: #dbeafe;
+    border-color: #93c5fd;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.15);
+}
+
+.btn-action-icon.delete-btn {
+    color: #dc2626;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.btn-action-icon.delete-btn:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(220, 38, 38, 0.15);
+}
