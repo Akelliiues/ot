@@ -238,6 +238,14 @@ class OTApp {
         }
     }
 
+    redirectToMainSite() {
+        if (window.history.length > 1 && document.referrer) {
+            window.history.back();
+        } else {
+            window.location.href = '../';
+        }
+    }
+
     resetDefaultStaff() {
         if (confirm('คุณต้องการรีเซ็ตรายชื่อและตำแหน่งกลับเป็นข้อมูลตั้งต้นเจ้าหน้าที่ ๗ ท่านตามเอกสารราชการใช่หรือไม่?')) {
             this.staffList = JSON.parse(JSON.stringify(defaultStaffList));
