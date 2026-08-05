@@ -344,17 +344,32 @@ input:checked+.slider:before {
     opacity: 1;
 }
 
-.tab-btn:hover::after {
+.tab-btn[data-dir="right"]:hover::after,
+.tab-btn:not([data-dir]):hover::after {
     opacity: 1;
-    animation: tabGlowSweep 0.75s ease-out;
+    animation: tabGlowSweepRight 0.65s ease-out;
 }
 
-@keyframes tabGlowSweep {
+.tab-btn[data-dir="left"]:hover::after {
+    opacity: 1;
+    animation: tabGlowSweepLeft 0.65s ease-out;
+}
+
+@keyframes tabGlowSweepRight {
     0% {
         left: -120%;
     }
     100% {
         left: 160%;
+    }
+}
+
+@keyframes tabGlowSweepLeft {
+    0% {
+        left: 160%;
+    }
+    100% {
+        left: -120%;
     }
 }
 

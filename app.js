@@ -461,13 +461,36 @@ class OTApp {
 
     initTabs() {
         const tabBtns = document.querySelectorAll('.tab-btn');
+        let lastX = 0;
+
         tabBtns.forEach(btn => {
+            btn.addEventListener('mouseenter', (e) => {
+                const currentX = e.clientX;
+                if (lastX > 0) {
+                    if (currentX < lastX) {
+                        btn.setAttribute('data-dir', 'left');
+                    } else if (currentX > lastX) {
+                        btn.setAttribute('data-dir', 'right');
+                    }
+                }
+                lastX = currentX;
+            });
+
             btn.addEventListener('mousemove', (e) => {
                 const rect = btn.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
                 btn.style.setProperty('--mouse-x', `${x}px`);
                 btn.style.setProperty('--mouse-y', `${y}px`);
+
+                if (e.clientX !== lastX && lastX > 0) {
+                    if (e.clientX < lastX) {
+                        btn.setAttribute('data-dir', 'left');
+                    } else {
+                        btn.setAttribute('data-dir', 'right');
+                    }
+                }
+                lastX = e.clientX;
             });
 
             btn.addEventListener('click', () => {
