@@ -183,7 +183,7 @@ class OTApp {
 
     // Authentication Checks & Handlers
     checkAuth() {
-        const isLoggedIn = sessionStorage.getItem('ot_logged_in') === 'true';
+        const isLoggedIn = sessionStorage.getItem('ot_logged_in') === 'true' || localStorage.getItem('ot_logged_in') === 'true';
         const loginOverlay = document.getElementById('loginOverlay');
         const logoutBtn = document.getElementById('logoutBtn');
 
@@ -198,27 +198,35 @@ class OTApp {
 
     handleLogin(e) {
         if (e) e.preventDefault();
-        const usernameInput = document.getElementById('loginUsername');
-        const passwordInput = document.getElementById('loginPassword');
-        const errorMsg = document.getElementById('loginError');
+        try {
+            const usernameInput = document.getElementById('loginUsername');
+            const passwordInput = document.getElementById('loginPassword');
+            const errorMsg = document.getElementById('loginError');
 
-        let username = usernameInput ? usernameInput.value.trim().toLowerCase() : '';
-        let password = passwordInput ? passwordInput.value.trim() : '';
+            let rawUser = usernameInput ? usernameInput.value : '';
+            let rawPass = passwordInput ? passwordInput.value : '';
 
-        // Convert Thai numerals (e.g. ๐๐๓๒๕) to Arabic numerals (00325)
-        const thaiDigits = ['๐', '๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙'];
-        thaiDigits.forEach((digit, idx) => {
-            username = username.replaceAll(digit, idx.toString());
-            password = password.replaceAll(digit, idx.toString());
-        });
+            // Convert Thai numerals to Arabic numerals using universal regex (ES5 compatible)
+            const thaiDigits = ['๐', '๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙'];
+            let username = rawUser.trim().toLowerCase().replace(/[๐-๙]/g, char => thaiDigits.indexOf(char));
+            let password = rawPass.trim().replace(/[๐-๙]/g, char => thaiDigits.indexOf(char));
 
-        if (username === 'ssotansum' && password === '00325') {
-            sessionStorage.setItem('ot_logged_in', 'true');
-            if (errorMsg) errorMsg.style.display = 'none';
-            this.checkAuth();
-        } else {
+            if (username === 'ssotansum' && password === '00325') {
+                sessionStorage.setItem('ot_logged_in', 'true');
+                localStorage.setItem('ot_logged_in', 'true');
+                if (errorMsg) errorMsg.style.display = 'none';
+                this.checkAuth();
+            } else {
+                if (errorMsg) {
+                    errorMsg.innerText = '❌ ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง';
+                    errorMsg.style.display = 'block';
+                }
+            }
+        } catch (err) {
+            console.error('Login error:', err);
+            const errorMsg = document.getElementById('loginError');
             if (errorMsg) {
-                errorMsg.innerText = '❌ ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง';
+                errorMsg.innerText = '❌ เกิดข้อผิดพลาด: ' + err.message;
                 errorMsg.style.display = 'block';
             }
         }
@@ -227,6 +235,7 @@ class OTApp {
     handleLogout() {
         if (confirm('คุณต้องการออกจากระบบใช่หรือไม่?')) {
             sessionStorage.removeItem('ot_logged_in');
+            localStorage.removeItem('ot_logged_in');
             const usernameInput = document.getElementById('loginUsername');
             const passwordInput = document.getElementById('loginPassword');
             if (usernameInput) usernameInput.value = '';
@@ -1499,8 +1508,17 @@ class OTApp {
 
 
 
-// Initialize Application
-let app;
-document.addEventListener('DOMContentLoaded', () => {
-    app = new OTApp();
-});
+// Initialize Application safely across environments & loading states
+var app;
+function initOTApp() {
+    if (!window.app) {
+        window.app = new OTApp();
+        app = window.app;
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initOTApp);
+} else {
+    initOTApp();
+}
