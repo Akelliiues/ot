@@ -43,15 +43,18 @@
                     </select>
                 </div>
 
-                <!-- Dark / Light Theme Toggle -->
-                <div class="theme-switch-wrapper">
-                    <span class="theme-icon">☀️</span>
-                    <label class="theme-switch" for="checkbox">
-                        <input type="checkbox" id="checkbox" />
-                        <div class="slider round"></div>
-                    </label>
-                    <span class="theme-icon">🌙</span>
-                </div>
+                <!-- Daymode / Nightmode Neumorphic Pill Toggle -->
+                <label class="mode-toggle-pill" for="checkbox" title="สลับโหมด มืด / สว่าง">
+                    <input type="checkbox" id="checkbox" />
+                    <span class="mode-pill-bg">
+                        <span class="mode-pill-text text-day">DAYMODE</span>
+                        <span class="mode-pill-text text-night">NIGHTMODE</span>
+                        <span class="mode-pill-knob">
+                            <span class="knob-icon icon-sun">☀️</span>
+                            <span class="knob-icon icon-moon">🌙</span>
+                        </span>
+                    </span>
+                </label>
 
                 <button class="btn btn-primary" onclick="window.print()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
