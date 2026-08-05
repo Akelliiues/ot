@@ -614,7 +614,7 @@ input:checked+.slider:before {
 }
 
 #tab-daily .work-time-title {
-    width: 302px;
+    width: 237px;
     flex-shrink: 0;
 }
 
@@ -1456,7 +1456,7 @@ input:checked+.slider:before {
     }
 
     #tab-daily .work-time-title {
-        width: 302px !important;
+        width: 237px !important;
         flex-shrink: 0 !important;
     }
 
