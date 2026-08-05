@@ -295,6 +295,67 @@ input:checked+.slider:before {
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+}
+
+/* Mouse-following Radial Spotlight Glow */
+.tab-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        110px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(56, 189, 248, 0.28),
+        rgba(13, 148, 136, 0.12) 45%,
+        transparent 80%
+    );
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Sheen Light Sweep Effect on Hover */
+.tab-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -120%;
+    width: 70%;
+    height: 200%;
+    background: linear-gradient(
+        115deg,
+        transparent,
+        rgba(255, 255, 255, 0.38),
+        transparent
+    );
+    transform: rotate(25deg);
+    pointer-events: none;
+    opacity: 0;
+    z-index: 2;
+}
+
+.tab-btn:hover::before {
+    opacity: 1;
+}
+
+.tab-btn:hover::after {
+    opacity: 1;
+    animation: tabGlowSweep 0.75s ease-out;
+}
+
+@keyframes tabGlowSweep {
+    0% {
+        left: -120%;
+    }
+    100% {
+        left: 160%;
+    }
 }
 
 .tab-btn:hover {
@@ -306,6 +367,17 @@ input:checked+.slider:before {
     color: var(--primary-color);
     border-bottom-color: var(--primary-color);
     background-color: var(--primary-light);
+    box-shadow: inset 0 -1px 0 var(--primary-color);
+}
+
+.tab-btn.active::before {
+    opacity: 0.7;
+    background: radial-gradient(
+        130px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(2, 132, 199, 0.35),
+        rgba(13, 148, 136, 0.18) 50%,
+        transparent 85%
+    );
 }
 
 /* Main Layout */
