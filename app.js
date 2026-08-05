@@ -183,7 +183,10 @@ class OTApp {
 
     // Authentication Checks & Handlers
     checkAuth() {
-        const isLoggedIn = sessionStorage.getItem('ot_logged_in') === 'true' || localStorage.getItem('ot_logged_in') === 'true';
+        // Clear any old legacy localStorage auth key
+        localStorage.removeItem('ot_logged_in');
+
+        const isLoggedIn = sessionStorage.getItem('ot_logged_in') === 'true';
         const loginOverlay = document.getElementById('loginOverlay');
         const logoutBtn = document.getElementById('logoutBtn');
 
@@ -198,35 +201,20 @@ class OTApp {
 
     handleLogin(e) {
         if (e) e.preventDefault();
-        try {
-            const usernameInput = document.getElementById('loginUsername');
-            const passwordInput = document.getElementById('loginPassword');
-            const errorMsg = document.getElementById('loginError');
+        const usernameInput = document.getElementById('loginUsername');
+        const passwordInput = document.getElementById('loginPassword');
+        const errorMsg = document.getElementById('loginError');
 
-            let rawUser = usernameInput ? usernameInput.value : '';
-            let rawPass = passwordInput ? passwordInput.value : '';
+        const username = usernameInput ? usernameInput.value.trim() : '';
+        const password = passwordInput ? passwordInput.value.trim() : '';
 
-            // Convert Thai numerals to Arabic numerals using universal regex (ES5 compatible)
-            const thaiDigits = ['๐', '๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙'];
-            let username = rawUser.trim().toLowerCase().replace(/[๐-๙]/g, char => thaiDigits.indexOf(char));
-            let password = rawPass.trim().replace(/[๐-๙]/g, char => thaiDigits.indexOf(char));
-
-            if (username === 'ssotansum' && password === '00325') {
-                sessionStorage.setItem('ot_logged_in', 'true');
-                localStorage.setItem('ot_logged_in', 'true');
-                if (errorMsg) errorMsg.style.display = 'none';
-                this.checkAuth();
-            } else {
-                if (errorMsg) {
-                    errorMsg.innerText = '❌ ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง';
-                    errorMsg.style.display = 'block';
-                }
-            }
-        } catch (err) {
-            console.error('Login error:', err);
-            const errorMsg = document.getElementById('loginError');
+        if (username === 'ssotansum' && password === '00325') {
+            sessionStorage.setItem('ot_logged_in', 'true');
+            if (errorMsg) errorMsg.style.display = 'none';
+            this.checkAuth();
+        } else {
             if (errorMsg) {
-                errorMsg.innerText = '❌ เกิดข้อผิดพลาด: ' + err.message;
+                errorMsg.innerText = '❌ ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง';
                 errorMsg.style.display = 'block';
             }
         }
