@@ -61,6 +61,10 @@
                     </svg>
                     พิมพ์เอกสาร
                 </button>
+
+                <button id="logoutBtn" class="btn btn-secondary" onclick="app.handleLogout()" style="display: none; background: #ef4444; color: #ffffff; border-color: #ef4444; font-weight: 600; align-items: center; gap: 6px;" title="ออกจากระบบ">
+                    🚪 ออกจากระบบ
+                </button>
             </div>
         </div>
     </header>
@@ -785,6 +789,37 @@
             <div style="display: flex; justify-content: space-between; font-size: 0.84rem; color: #475569; font-weight: 600;">
                 <span id="excelProgressDetailText">0 / 31 วัน</span>
                 <span id="excelProgressPercentText" style="color: #16a34a; font-weight: 700;">0%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Login Overlay -->
+    <div id="loginOverlay" class="login-overlay no-print" style="display: flex;">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo-icon">🔒</div>
+                <h2>เข้าสู่ระบบบริหารงาน OT</h2>
+                <p>สำนักงานสาธารณสุขอำเภอตาลสุม จังหวัดอุบลราชธานี</p>
+            </div>
+            <form id="loginForm" onsubmit="app.handleLogin(event)">
+                <div class="form-group-login">
+                    <label for="loginUsername">👤 ชื่อผู้ใช้งาน (Username):</label>
+                    <input type="text" id="loginUsername" class="login-input" placeholder="ระบุชื่อผู้ใช้งาน" required autocomplete="username">
+                </div>
+                <div class="form-group-login">
+                    <label for="loginPassword">🔑 รหัสผ่าน (Password):</label>
+                    <div class="login-password-wrapper">
+                        <input type="password" id="loginPassword" class="login-input" placeholder="ระบุรหัสผ่าน" required autocomplete="current-password">
+                        <button type="button" class="btn-toggle-password" onclick="app.togglePasswordVisibility()" title="แสดง/ซ่อนรหัสผ่าน">👁️</button>
+                    </div>
+                </div>
+                <div id="loginError" class="login-error-msg" style="display: none;"></div>
+                <button type="submit" class="btn-login-submit">
+                    🔓 เข้าสู่ระบบ
+                </button>
+            </form>
+            <div class="login-footer-info">
+                ระบบบริหารจัดการบันทึกและเสนอขออนุมัติปฏิบัติงานนอกเวลาราชการ
             </div>
         </div>
     </div>

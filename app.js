@@ -178,6 +178,64 @@ class OTApp {
         this.initTheme();
         this.initTabs();
         this.loadMonthData();
+        this.checkAuth();
+    }
+
+    // Authentication Checks & Handlers
+    checkAuth() {
+        const isLoggedIn = sessionStorage.getItem('ot_logged_in') === 'true';
+        const loginOverlay = document.getElementById('loginOverlay');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        if (isLoggedIn) {
+            if (loginOverlay) loginOverlay.style.display = 'none';
+            if (logoutBtn) logoutBtn.style.display = 'inline-flex';
+        } else {
+            if (loginOverlay) loginOverlay.style.display = 'flex';
+            if (logoutBtn) logoutBtn.style.display = 'none';
+        }
+    }
+
+    handleLogin(e) {
+        if (e) e.preventDefault();
+        const usernameInput = document.getElementById('loginUsername');
+        const passwordInput = document.getElementById('loginPassword');
+        const errorMsg = document.getElementById('loginError');
+
+        const username = usernameInput ? usernameInput.value.trim() : '';
+        const password = passwordInput ? passwordInput.value : '';
+
+        if (username === 'ssotansum' && password === '00325') {
+            sessionStorage.setItem('ot_logged_in', 'true');
+            if (errorMsg) errorMsg.style.display = 'none';
+            this.checkAuth();
+        } else {
+            if (errorMsg) {
+                errorMsg.innerText = '❌ ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง';
+                errorMsg.style.display = 'block';
+            }
+        }
+    }
+
+    handleLogout() {
+        if (confirm('คุณต้องการออกจากระบบใช่หรือไม่?')) {
+            sessionStorage.removeItem('ot_logged_in');
+            const usernameInput = document.getElementById('loginUsername');
+            const passwordInput = document.getElementById('loginPassword');
+            if (usernameInput) usernameInput.value = '';
+            if (passwordInput) passwordInput.value = '';
+            this.checkAuth();
+        }
+    }
+
+    togglePasswordVisibility() {
+        const pwdInput = document.getElementById('loginPassword');
+        if (!pwdInput) return;
+        if (pwdInput.type === 'password') {
+            pwdInput.type = 'text';
+        } else {
+            pwdInput.type = 'password';
+        }
     }
 
     resetDefaultStaff() {
