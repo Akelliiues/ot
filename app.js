@@ -1046,11 +1046,6 @@ class OTApp {
 
     // Export Daily Log for Whole Month into a Single Excel File (1 Day = 1 Portrait A4 Page, Full Borders & Print Setup 100%)
     async exportDailyExcelMonth() {
-        if (typeof XLSX === 'undefined') {
-            alert('กำลังโหลดระบบส่งออก Excel กรุณาลองใหม่อีกครั้งในอีกสักครู่');
-            return;
-        }
-
         const progressModal = document.getElementById('excelProgressModal');
         const progressBar = document.getElementById('excelProgressBar');
         const statusText = document.getElementById('excelProgressStatusText');
@@ -1067,13 +1062,22 @@ class OTApp {
             await new Promise(resolve => setTimeout(resolve, 15));
         };
 
+        const escapeXml = (unsafe) => {
+            if (unsafe === null || unsafe === undefined) return '';
+            return unsafe.toString()
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&apos;');
+        };
+
         try {
             if (progressModal) progressModal.style.display = 'flex';
             if (iconEl) iconEl.innerText = '📊';
 
             await updateProgress(5, 'กำลังเตรียมโครงสร้างแบบฟอร์มการพิมพ์...', `0 / ${this.daysInMonth} วัน`);
 
-            const wb = XLSX.utils.book_new();
             const currentData = otMatrixStorage[this.currentMonthKey] || {};
             const [yearStr, monthStr] = this.currentMonthKey.split('-');
             const selYear = parseInt(yearStr, 10);
@@ -1081,36 +1085,103 @@ class OTApp {
             const monthName = monthNamesThai[monthStr];
             const yearThai = toThaiNumerals(selYear + 543);
 
-            // Container for temp DOM elements
-            let tempContainer = document.getElementById('tempExcelContainer');
-            if (!tempContainer) {
-                tempContainer = document.createElement('div');
-                tempContainer.id = 'tempExcelContainer';
-                tempContainer.style.display = 'none';
-                document.body.appendChild(tempContainer);
-            }
+            let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>สำนักงานสาธารณสุขอำเภอตาลสุม</Author>
+  <Created>${new Date().toISOString()}</Created>
+ </DocumentProperties>
+ <Styles>
+  <Style ss:ID="Default" ss:Name="Normal">
+   <Alignment ss:Vertical="Center"/>
+   <Borders/>
+   <Font ss:FontName="TH Sarabun PSK" ss:Size="13"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+  <Style ss:ID="TitleMain">
+   <Font ss:FontName="TH Sarabun PSK" ss:Size="16" ss:Bold="1"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+  </Style>
+  <Style ss:ID="TitleSub">
+   <Font ss:FontName="TH Sarabun PSK" ss:Size="14" ss:Bold="1"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+  </Style>
+  <Style ss:ID="TableHeader">
+   <Font ss:FontName="TH Sarabun PSK" ss:Size="13" ss:Bold="1"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+   <Interior ss:Color="#F8FAFC" ss:Pattern="Solid"/>
+  </Style>
+  <Style ss:ID="TableCellCenter">
+   <Font ss:FontName="TH Sarabun PSK" ss:Size="13"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+  </Style>
+  <Style ss:ID="TableCellLeft">
+   <Font ss:FontName="TH Sarabun PSK" ss:Size="13"/>
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+    <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
+  </Style>
+  <Style ss:ID="SummaryText">
+   <Font ss:FontName="TH Sarabun PSK" ss:Size="13"/>
+   <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
+  </Style>
+  <Style ss:ID="SignatureText">
+   <Font ss:FontName="TH Sarabun PSK" ss:Size="13"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+  </Style>
+ </Styles>
+`;
 
             await updateProgress(10, 'กำลังสร้าง Sheet 1: สรุปภาพรวมรายเดือน (ฟอนต์ TH Sarabun)...', `0 / ${this.daysInMonth} วัน`);
 
-            // --- Sheet 1: Monthly Summary Overview ---
-            let summaryTableHtml = `
-                <table style="border-collapse: collapse; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif; width: 100%;">
-                    <tr>
-                        <td colspan="6" style="text-align: center; font-size: 16pt; font-weight: bold; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif; padding: 4px 0;">สรุปบัญชีลงเวลาการปฏิบัติงานนอกเวลาราชการ ประจำเดือน ${monthName} พ.ศ. ${yearThai}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="6" style="text-align: center; font-size: 14pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif; padding-bottom: 8px;">หน่วยงาน: สำนักงานสาธารณสุขอำเภอตาลสุม จังหวัดอุบลราชธานี</td>
-                    </tr>
-                    <tr><td colspan="6"></td></tr>
-                    <tr>
-                        <th style="border: 1px solid #000000; text-align: center; background-color: #f1f5f9; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ลำดับ</th>
-                        <th style="border: 1px solid #000000; text-align: center; background-color: #f1f5f9; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ชื่อ - สกุล</th>
-                        <th style="border: 1px solid #000000; text-align: center; background-color: #f1f5f9; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ตำแหน่ง</th>
-                        <th style="border: 1px solid #000000; text-align: center; background-color: #f1f5f9; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ประเภทบุคลากร</th>
-                        <th style="border: 1px solid #000000; text-align: center; background-color: #f1f5f9; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">จำนวนวันมาปฏิบัติงาน (วัน)</th>
-                        <th style="border: 1px solid #000000; text-align: center; background-color: #f1f5f9; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">รวมจำนวนชั่วโมง (ชม.)</th>
-                    </tr>
-            `;
+            // --- Sheet 1: สรุปภาพรวมรายเดือน ---
+            xmlContent += ` <Worksheet ss:Name="สรุปภาพรวมรายเดือน">
+  <Table ss:ExpandedColumnCount="6">
+   <Column ss:Width="40"/>
+   <Column ss:Width="160"/>
+   <Column ss:Width="160"/>
+   <Column ss:Width="130"/>
+   <Column ss:Width="130"/>
+   <Column ss:Width="130"/>
+   <Row ss:Height="26">
+    <Cell ss:MergeAcross="5" ss:StyleID="TitleMain"><Data ss:Type="String">สรุปบัญชีลงเวลาการปฏิบัติงานนอกเวลาราชการ ประจำเดือน ${monthName} พ.ศ. ${yearThai}</Data></Cell>
+   </Row>
+   <Row ss:Height="22">
+    <Cell ss:MergeAcross="5" ss:StyleID="TitleSub"><Data ss:Type="String">หน่วยงาน: สำนักงานสาธารณสุขอำเภอตาลสุม จังหวัดอุบลราชธานี</Data></Cell>
+   </Row>
+   <Row ss:Height="10"/>
+   <Row ss:Height="26">
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">ลำดับ</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">ชื่อ - สกุล</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">ตำแหน่ง</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">ประเภทบุคลากร</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">จำนวนวันมาปฏิบัติงาน (วัน)</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">รวมจำนวนชั่วโมง (ชม.)</Data></Cell>
+   </Row>
+`;
 
             this.staffList.forEach((staff, idx) => {
                 const staffOt = currentData[staff.id] || {};
@@ -1123,41 +1194,46 @@ class OTApp {
                         totalHours += h;
                     }
                 }
-                summaryTableHtml += `
-                    <tr style="height: 26px;">
-                        <td style="border: 1px solid #000000; text-align: center; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${toThaiNumerals(idx + 1)}</td>
-                        <td style="border: 1px solid #000000; text-align: left; padding-left: 6px; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${staff.name}</td>
-                        <td style="border: 1px solid #000000; text-align: left; padding-left: 6px; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${staff.position}</td>
-                        <td style="border: 1px solid #000000; text-align: center; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${staff.typeText || staff.type || 'ข้าราชการ'}</td>
-                        <td style="border: 1px solid #000000; text-align: center; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${toThaiNumerals(totalDays)}</td>
-                        <td style="border: 1px solid #000000; text-align: center; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${toThaiNumerals(totalHours)}</td>
-                    </tr>
-                `;
+                xmlContent += `   <Row ss:Height="24">
+    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String">${toThaiNumerals(idx + 1)}</Data></Cell>
+    <Cell ss:StyleID="TableCellLeft"><Data ss:Type="String">${escapeXml(staff.name)}</Data></Cell>
+    <Cell ss:StyleID="TableCellLeft"><Data ss:Type="String">${escapeXml(staff.position)}</Data></Cell>
+    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String">${escapeXml(staff.typeText || staff.type || 'ข้าราชการ')}</Data></Cell>
+    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String">${toThaiNumerals(totalDays)}</Data></Cell>
+    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String">${toThaiNumerals(totalHours)}</Data></Cell>
+   </Row>
+`;
             });
 
-            summaryTableHtml += `</table>`;
-            tempContainer.innerHTML = summaryTableHtml;
-            const wsSummary = XLSX.utils.table_to_sheet(tempContainer.querySelector('table'));
-            wsSummary['!pageSetup'] = { orientation: 'portrait', paperSize: 9, fitToPage: true, fitToWidth: 1, fitToHeight: 1 };
-            wsSummary['!views'] = [{ showGridLines: true }];
-            wsSummary['!cols'] = [
-                { wch: 8 }, { wch: 25 }, { wch: 30 }, { wch: 22 }, { wch: 26 }, { wch: 22 }
-            ];
-            XLSX.utils.book_append_sheet(wb, wsSummary, 'สรุปภาพรวมรายเดือน');
+            xmlContent += `  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Layout ss:Orientation="Portrait"/>
+    <PageMargins ss:Bottom="0.5" ss:Left="0.5" ss:Right="0.5" ss:Top="0.5"/>
+   </PageSetup>
+   <FitToPage/>
+   <Print>
+    <FitWidth>1</FitWidth>
+    <FitHeight>1</FitHeight>
+   </Print>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+`;
 
-            // --- Sheets 2-N: Daily Attendance (1 Sheet = 1 Portrait Page per Day with High Density 26-Column Grid A-Z) ---
+            // --- Sheets 2-N: Daily Attendance Sheets (8 Columns Perfect Fit) ---
             for (let d = 1; d <= this.daysInMonth; d++) {
                 const pct = 10 + Math.round((d / this.daysInMonth) * 82);
                 const dayNumThai = toThaiNumerals(d);
                 await updateProgress(
                     pct,
-                    `กำลังจัดโครงสร้าง Grid 26 ช่อง ฟอนต์ TH Sarabun วันที่ ${dayNumThai} ${monthName}...`,
+                    `กำลังจัดหน้าตารางกรอบเส้นคมชัด ฟอนต์ TH Sarabun วันที่ ${dayNumThai} ${monthName}...`,
                     `${d} / ${this.daysInMonth} วัน`
                 );
 
                 const dateObj = new Date(selYear, selMonth - 1, d);
                 const holidayInfo = this.getHolidayInfo(d);
-                const dayOfWeekStr = daysOfWeekThai ? daysOfWeekThai[dateObj.getDay()] : '';
 
                 const activeStaffList = this.staffList.filter(staff => {
                     const staffOt = currentData[staff.id] || {};
@@ -1169,35 +1245,43 @@ class OTApp {
                 let countGov = 0;
                 let countState = 0;
                 let countMoh = 0;
-
-                let dailyHtml = `
-                    <table style="border-collapse: collapse; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif; width: 100%;">
-                        <tr>
-                            <td colspan="26" style="text-align: center; font-size: 16pt; font-weight: bold; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif; padding: 4px 0;">บัญชีลงเวลาการปฏิบัติงานนอกเวลาราชการและวันหยุดราชการ</td>
-                        </tr>
-                        <tr>
-                            <td colspan="26" style="text-align: center; font-size: 14pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif; padding-bottom: 8px;">หน่วยงาน สำนักงานสาธารณสุขอำเภอตาลสุม ประจำวันที่ ${dayNumThai} ${monthName} พ.ศ. ${yearThai}</td>
-                        </tr>
-                        <tr><td colspan="26" style="height: 6px;"></td></tr>
-
-                        <!-- Table Headers (26-Column High Precision Grid A to Z) -->
-                        <tr style="height: 26px;">
-                            <th rowspan="2" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ลำดับ</th>
-                            <th rowspan="2" colspan="6" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ชื่อ-สกุล</th>
-                            <th rowspan="2" colspan="6" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ตำแหน่ง</th>
-                            <th colspan="4" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">เวลามา</th>
-                            <th colspan="4" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">เวลากลับ</th>
-                            <th rowspan="2" colspan="7" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">หมายเหตุ</th>
-                        </tr>
-                        <tr style="height: 24px;">
-                            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">เวลา</th>
-                            <th colspan="3" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ลายมือชื่อ</th>
-                            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">เวลา</th>
-                            <th colspan="3" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ลายมือชื่อ</th>
-                        </tr>
-                `;
-
                 let activeCount = 0;
+
+                const sheetName = `วันที่ ${dayNumThai}`;
+
+                xmlContent += ` <Worksheet ss:Name="${sheetName}">
+  <Table ss:ExpandedColumnCount="8">
+   <Column ss:Width="35"/>
+   <Column ss:Width="150"/>
+   <Column ss:Width="150"/>
+   <Column ss:Width="50"/>
+   <Column ss:Width="80"/>
+   <Column ss:Width="50"/>
+   <Column ss:Width="80"/>
+   <Column ss:Width="90"/>
+   <Row ss:Height="26">
+    <Cell ss:MergeAcross="7" ss:StyleID="TitleMain"><Data ss:Type="String">บัญชีลงเวลาการปฏิบัติงานนอกเวลาราชการและวันหยุดราชการ</Data></Cell>
+   </Row>
+   <Row ss:Height="22">
+    <Cell ss:MergeAcross="7" ss:StyleID="TitleSub"><Data ss:Type="String">หน่วยงาน สำนักงานสาธารณสุขอำเภอตาลสุม ประจำวันที่ ${dayNumThai} ${monthName} พ.ศ. ${yearThai}</Data></Cell>
+   </Row>
+   <Row ss:Height="8"/>
+   <Row ss:Height="24">
+    <Cell ss:StyleID="TableHeader" ss:MergeDown="1"><Data ss:Type="String">ลำดับ</Data></Cell>
+    <Cell ss:StyleID="TableHeader" ss:MergeDown="1"><Data ss:Type="String">ชื่อ-สกุล</Data></Cell>
+    <Cell ss:StyleID="TableHeader" ss:MergeDown="1"><Data ss:Type="String">ตำแหน่ง</Data></Cell>
+    <Cell ss:StyleID="TableHeader" ss:MergeAcross="1"><Data ss:Type="String">เวลามา</Data></Cell>
+    <Cell ss:StyleID="TableHeader" ss:MergeAcross="1"><Data ss:Type="String">เวลากลับ</Data></Cell>
+    <Cell ss:StyleID="TableHeader" ss:MergeDown="1"><Data ss:Type="String">หมายเหตุ</Data></Cell>
+   </Row>
+   <Row ss:Height="22">
+    <Cell ss:Index="4" ss:StyleID="TableHeader"><Data ss:Type="String">เวลา</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">ลายมือชื่อ</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">เวลา</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">ลายมือชื่อ</Data></Cell>
+   </Row>
+`;
+
                 listToUse.forEach((staff, idx) => {
                     const staffOt = currentData[staff.id] || {};
                     const hours = staffOt[d] || 0;
@@ -1213,101 +1297,89 @@ class OTApp {
                     let inTime = holidayInfo.isHoliday ? '๐๘.๓๐' : '๑๖.๓๐';
                     let outTime = holidayInfo.isHoliday ? '๑๖.๓๐' : '๑๘.๓๐';
 
-                    dailyHtml += `
-                        <tr style="height: 28px;">
-                            <td style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${toThaiNumerals(idx + 1)}</td>
-                            <td colspan="6" style="border: 1px solid #000000; text-align: left; vertical-align: middle; padding-left: 6px; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${staff.name}</td>
-                            <td colspan="6" style="border: 1px solid #000000; text-align: left; vertical-align: middle; padding-left: 6px; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${staff.position}</td>
-                            <td style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${hours > 0 ? inTime : ''}</td>
-                            <td colspan="3" style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;"></td>
-                            <td style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${hours > 0 ? outTime : ''}</td>
-                            <td colspan="3" style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;"></td>
-                            <td colspan="7" style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${hours > 0 ? 'ปฏิบัติงานตามแผน' : ''}</td>
-                        </tr>
-                    `;
+                    xmlContent += `   <Row ss:Height="24">
+    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String">${toThaiNumerals(idx + 1)}</Data></Cell>
+    <Cell ss:StyleID="TableCellLeft"><Data ss:Type="String">${escapeXml(staff.name)}</Data></Cell>
+    <Cell ss:StyleID="TableCellLeft"><Data ss:Type="String">${escapeXml(staff.position)}</Data></Cell>
+    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String">${hours > 0 ? inTime : ''}</Data></Cell>
+    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String">${hours > 0 ? outTime : ''}</Data></Cell>
+    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String">${hours > 0 ? 'ปฏิบัติงานตามแผน' : ''}</Data></Cell>
+   </Row>
+`;
                 });
 
-                // Pad remaining rows up to 14 total print rows (matching HTML print preview)
+                // Pad remaining rows up to 14 print rows total
                 const printRowsLimit = 14;
                 for (let r = listToUse.length + 1; r <= printRowsLimit; r++) {
-                    dailyHtml += `
-                        <tr style="height: 28px;">
-                            <td style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${toThaiNumerals(r)}</td>
-                            <td colspan="6" style="border: 1px solid #000000;"></td>
-                            <td colspan="6" style="border: 1px solid #000000;"></td>
-                            <td style="border: 1px solid #000000;"></td>
-                            <td colspan="3" style="border: 1px solid #000000;"></td>
-                            <td style="border: 1px solid #000000;"></td>
-                            <td colspan="3" style="border: 1px solid #000000;"></td>
-                            <td colspan="7" style="border: 1px solid #000000;"></td>
-                        </tr>
-                    `;
+                    xmlContent += `   <Row ss:Height="24">
+    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String">${toThaiNumerals(r)}</Data></Cell>
+    <Cell ss:StyleID="TableCellLeft"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="TableCellLeft"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String"></Data></Cell>
+    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String"></Data></Cell>
+   </Row>
+`;
                 }
 
-                dailyHtml += `
-                    <tr><td colspan="26" style="height: 10px;"></td></tr>
-                    <tr>
-                        <td colspan="26" style="font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif; padding-top: 4px;">รวมผู้มาปฏิบัติงานครั้งนี้ จำนวน ${formatDottedCount(activeCount)} คน แยกเป็น</td>
-                    </tr>
-                    <tr>
-                        <td colspan="26" style="font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ข้าราชการ จำนวน ${formatDottedCount(countGov)} คน   พนักงานราชการ จำนวน ${formatDottedCount(countState)} คน   พนักงานกระทรวงสาธารณสุข จำนวน ${formatDottedCount(countMoh)} คน</td>
-                    </tr>
-                    <tr><td colspan="26" style="height: 18px;"></td></tr>
-                    <tr>
-                        <td colspan="12"></td>
-                        <td colspan="14" style="text-align: center; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">(ลงชื่อ).................................................... ผู้ควบคุม/ตรวจสอบ</td>
-                    </tr>
-                    <tr>
-                        <td colspan="12"></td>
-                        <td colspan="14" style="text-align: center; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif; padding-top: 4px;">(นายอุทยาน จันทรโสภา)</td>
-                    </tr>
-                    <tr>
-                        <td colspan="12"></td>
-                        <td colspan="14" style="text-align: center; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ตำแหน่ง สาธารณสุขอำเภอตาลสุม</td>
-                    </tr>
-                </table>
-                `;
-
-                tempContainer.innerHTML = dailyHtml;
-                const wsDaily = XLSX.utils.table_to_sheet(tempContainer.querySelector('table'));
-
-                // Set Page Setup: Portrait mode, A4, Fit to 1 page wide and 1 page tall
-                wsDaily['!pageSetup'] = {
-                    orientation: 'portrait',
-                    paperSize: 9, // A4
-                    scale: 100,
-                    fitToPage: true,
-                    fitToWidth: 1,
-                    fitToHeight: 1
-                };
-
-                // Enable gridlines view in Excel
-                wsDaily['!views'] = [{ showGridLines: true }];
-
-                // Fine Column Widths for 26-Column Grid (A to Z)
-                wsDaily['!cols'] = [
-                    { wch: 5 },   // A: ลำดับ
-                    { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 },  // B-G: ชื่อ-สกุล (6 ช่อง)
-                    { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 },  // H-M: ตำแหน่ง (6 ช่อง)
-                    { wch: 7 }, { wch: 4 }, { wch: 4 }, { wch: 4 },                          // N-Q: เวลามา (1 เวลา + 3 เซ็นชื่อ)
-                    { wch: 7 }, { wch: 4 }, { wch: 4 }, { wch: 4 },                          // R-U: เวลากลับ (1 เวลา + 3 เซ็นชื่อ)
-                    { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }               // V-Z: หมายเหตุ (5 ช่อง)
-                ];
-
-                const sheetName = `วันที่ ${dayNumThai}`;
-                XLSX.utils.book_append_sheet(wb, wsDaily, sheetName);
+                xmlContent += `   <Row ss:Height="8"/>
+   <Row ss:Height="20">
+    <Cell ss:Index="1" ss:MergeAcross="7" ss:StyleID="SummaryText"><Data ss:Type="String">รวมผู้มาปฏิบัติงานครั้งนี้ จำนวน ${formatDottedCount(activeCount)} คน แยกเป็น</Data></Cell>
+   </Row>
+   <Row ss:Height="20">
+    <Cell ss:Index="1" ss:MergeAcross="7" ss:StyleID="SummaryText"><Data ss:Type="String">ข้าราชการ จำนวน ${formatDottedCount(countGov)} คน   พนักงานราชการ จำนวน ${formatDottedCount(countState)} คน   พนักงานกระทรวงสาธารณสุข จำนวน ${formatDottedCount(countMoh)} คน</Data></Cell>
+   </Row>
+   <Row ss:Height="16"/>
+   <Row ss:Height="22">
+    <Cell ss:Index="5" ss:MergeAcross="3" ss:StyleID="SignatureText"><Data ss:Type="String">(ลงชื่อ).................................................... ผู้ควบคุม/ตรวจสอบ</Data></Cell>
+   </Row>
+   <Row ss:Height="22">
+    <Cell ss:Index="5" ss:MergeAcross="3" ss:StyleID="SignatureText"><Data ss:Type="String">(นายอุทยาน จันทรโสภา)</Data></Cell>
+   </Row>
+   <Row ss:Height="22">
+    <Cell ss:Index="5" ss:MergeAcross="3" ss:StyleID="SignatureText"><Data ss:Type="String">ตำแหน่ง สาธารณสุขอำเภอตาลสุม</Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Layout ss:Orientation="Portrait"/>
+    <PageMargins ss:Bottom="0.5" ss:Left="0.5" ss:Right="0.5" ss:Top="0.5"/>
+   </PageSetup>
+   <FitToPage/>
+   <Print>
+    <FitWidth>1</FitWidth>
+    <FitHeight>1</FitHeight>
+   </Print>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+`;
             }
 
-            await updateProgress(95, 'กำลังรวบรวมไฟล์ Excel ตั้งค่าหน้าพิมพ์แนวตั้ง A4...', `${this.daysInMonth} / ${this.daysInMonth} วัน`);
-            const fileName = `บัญชีลงเวลารายวัน_รายเดือน_${monthName}_${yearThai}_สสอ.ตาลสุม.xlsx`;
-            XLSX.writeFile(wb, fileName);
+            xmlContent += `</Workbook>`;
 
-            await updateProgress(100, 'ส่งออกไฟล์ Excel พร้อมพิมพ์แนวตั้งสำเร็จเรียบร้อย!', `${this.daysInMonth} / ${this.daysInMonth} วัน`);
+            await updateProgress(95, 'กำลังรวบรวมไฟล์ Excel พร้อมกรอบเส้นตารางและตั้งค่าหน้าพิมพ์แนวตั้ง A4...', `${this.daysInMonth} / ${this.daysInMonth} วัน`);
+
+            const fileName = `บัญชีลงเวลารายวัน_รายเดือน_${monthName}_${yearThai}_สสอ.ตาลสุม.xls`;
+
+            const blob = new Blob(['\ufeff' + xmlContent], { type: 'application/vnd.ms-excel;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            await updateProgress(100, 'ส่งออกไฟล์ Excel กรอบเส้นคมชัด 1 หน้า A4 สำเร็จเรียบร้อย!', `${this.daysInMonth} / ${this.daysInMonth} วัน`);
             if (iconEl) iconEl.innerText = '✅';
 
             setTimeout(() => {
                 if (progressModal) progressModal.style.display = 'none';
-                if (tempContainer) tempContainer.innerHTML = '';
             }, 800);
         } catch (err) {
             console.error('Error in exportDailyExcelMonth:', err);
