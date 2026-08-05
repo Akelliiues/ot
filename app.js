@@ -630,10 +630,10 @@ class OTApp {
                         <td>${toThaiNumerals(activeIndex++)}</td>
                         <td style="text-align: left; font-weight: 500;">${staff.name}</td>
                         <td style="text-align: left;">${staff.position}</td>
-                        <td></td>
                         <td>${timeIn}</td>
                         <td></td>
                         <td>${timeOut}</td>
+                        <td></td>
                         <td></td>
                     </tr>
                 `;
@@ -1332,14 +1332,13 @@ class OTApp {
     <Cell ss:StyleID="TableHeader" ss:MergeDown="1"><Data ss:Type="String">ลำดับ</Data></Cell>
     <Cell ss:StyleID="TableHeader" ss:MergeDown="1"><Data ss:Type="String">ชื่อ-สกุล</Data></Cell>
     <Cell ss:StyleID="TableHeader" ss:MergeDown="1"><Data ss:Type="String">ตำแหน่ง</Data></Cell>
-    <Cell ss:StyleID="TableHeader" ss:MergeAcross="1"><Data ss:Type="String">เวลามา</Data></Cell>
-    <Cell ss:StyleID="TableHeader" ss:MergeAcross="1"><Data ss:Type="String">เวลากลับ</Data></Cell>
+    <Cell ss:StyleID="TableHeader" ss:MergeAcross="3"><Data ss:Type="String">เวลาปฏิบัติราชการนอกเวลาราชการปกติ</Data></Cell>
     <Cell ss:StyleID="TableHeader" ss:MergeDown="1"><Data ss:Type="String">หมายเหตุ</Data></Cell>
    </Row>
    <Row ss:Height="22">
-    <Cell ss:Index="4" ss:StyleID="TableHeader"><Data ss:Type="String">เวลา</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="TableHeader"><Data ss:Type="String">เวลามา</Data></Cell>
     <Cell ss:StyleID="TableHeader"><Data ss:Type="String">ลายมือชื่อ</Data></Cell>
-    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">เวลา</Data></Cell>
+    <Cell ss:StyleID="TableHeader"><Data ss:Type="String">เวลากลับ</Data></Cell>
     <Cell ss:StyleID="TableHeader"><Data ss:Type="String">ลายมือชื่อ</Data></Cell>
    </Row>
 `;
