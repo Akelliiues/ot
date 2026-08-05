@@ -202,8 +202,15 @@ class OTApp {
         const passwordInput = document.getElementById('loginPassword');
         const errorMsg = document.getElementById('loginError');
 
-        const username = usernameInput ? usernameInput.value.trim() : '';
-        const password = passwordInput ? passwordInput.value : '';
+        let username = usernameInput ? usernameInput.value.trim().toLowerCase() : '';
+        let password = passwordInput ? passwordInput.value.trim() : '';
+
+        // Convert Thai numerals (e.g. ๐๐๓๒๕) to Arabic numerals (00325)
+        const thaiDigits = ['๐', '๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙'];
+        thaiDigits.forEach((digit, idx) => {
+            username = username.replaceAll(digit, idx.toString());
+            password = password.replaceAll(digit, idx.toString());
+        });
 
         if (username === 'ssotansum' && password === '00325') {
             sessionStorage.setItem('ot_logged_in', 'true');
