@@ -603,8 +603,32 @@ input:checked+.slider:before {
     color: #000;
 }
 
+#tab-daily .work-time-info {
+    margin: 10px 0;
+    font-size: 9.5pt;
+    line-height: 1.6;
+}
+
+#tab-daily .work-time-row {
+    display: flex;
+}
+
+#tab-daily .work-time-title {
+    width: 220px;
+    flex-shrink: 0;
+}
+
+#tab-daily .work-time-day {
+    width: 140px;
+    flex-shrink: 0;
+}
+
+#tab-daily .work-time-detail {
+    flex-grow: 1;
+}
+
 #tab-daily .summary-counts {
-    margin: 12px 0;
+    margin: 10px 0;
     line-height: 1.8;
 }
 
@@ -1421,12 +1445,24 @@ input:checked+.slider:before {
     }
 
     #tab-daily .daily-form-footer {
-        margin-top: 8px !important;
-        font-size: 8.5pt !important;
+        margin-top: 6px !important;
+        font-size: 8.0pt !important;
+    }
+
+    #tab-daily .work-time-info {
+        font-size: 8.0pt !important;
+        margin: 4px 0 !important;
+        line-height: 1.35 !important;
+    }
+
+    #tab-daily .summary-counts {
+        font-size: 8.0pt !important;
+        margin: 4px 0 !important;
+        line-height: 1.4 !important;
     }
 
     #tab-daily .supervisor-sig-wrapper.margin-down-2rows {
-        margin-top: 30px !important;
+        margin-top: 16px !important;
     }
 
     /* Print Scope: Tab 3 (#tab-summary) - Note row spaced 3 lines away below signatures (สาธารณสุขอำเภอ) */
