@@ -665,16 +665,6 @@ input:checked+.slider:before {
     margin-right: 6px;
 }
 
-#tab-daily .supervisor-sig-box .sig-dots-box {
-    display: inline-block;
-    width: 250px;
-    text-align: center;
-}
-
-#tab-daily .supervisor-sig-box .sig-role {
-    margin-left: 6px;
-}
-
 /* ==========================================================================
    TAB 3: PAYMENT SUMMARY (#tab-summary) - INDEPENDENT SCOPE
    ========================================================================== */
@@ -1480,11 +1470,6 @@ input:checked+.slider:before {
 
     #tab-daily .supervisor-sig-wrapper.margin-down-2rows {
         margin-top: 14px !important;
-    }
-
-    #tab-daily .supervisor-sig-box .sig-dots-box {
-        width: 240px !important;
-        text-align: center !important;
     }
 
     /* Print Scope: Tab 3 (#tab-summary) - Note row spaced 3 lines away below signatures (สาธารณสุขอำเภอ) */
