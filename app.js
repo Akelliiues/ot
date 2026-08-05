@@ -1389,17 +1389,17 @@ class OTApp {
 
                 xmlContent += `   <Row ss:Height="8"/>
    <Row ss:Height="20">
-    <Cell ss:Index="1" ss:MergeAcross="1" ss:StyleID="SummaryText"><Data ss:Type="String">เวลาปฏิบัติงานนอกเวลาราชการ</Data></Cell>
-    <Cell ss:Index="3" ss:StyleID="SummaryText"><Data ss:Type="String">วันปกติ</Data></Cell>
-    <Cell ss:Index="4" ss:MergeAcross="4" ss:StyleID="SummaryText"><Data ss:Type="String">เริ่มปฏิบัติงานตั้งแต่เวลา ๑๖.๓๐-๑๘.๓๐ น.</Data></Cell>
+    <Cell ss:Index="1" ss:MergeAcross="2" ss:StyleID="SummaryText"><Data ss:Type="String">เวลาปฏิบัติงานนอกเวลาราชการ</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="SummaryText"><Data ss:Type="String">วันปกติ</Data></Cell>
+    <Cell ss:Index="5" ss:MergeAcross="3" ss:StyleID="SummaryText"><Data ss:Type="String">เริ่มปฏิบัติงานตั้งแต่เวลา ๑๖.๓๐-๑๘.๓๐ น.</Data></Cell>
    </Row>
    <Row ss:Height="20">
-    <Cell ss:Index="3" ss:StyleID="SummaryText"><Data ss:Type="String">วันหยุดราชการ</Data></Cell>
-    <Cell ss:Index="4" ss:MergeAcross="4" ss:StyleID="SummaryText"><Data ss:Type="String">เริ่มปฏิบัติงานตั้งแต่เวลา ๐๘.๓๐-๑๖.๓๐ น.</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="SummaryText"><Data ss:Type="String">วันหยุดราชการ</Data></Cell>
+    <Cell ss:Index="5" ss:MergeAcross="3" ss:StyleID="SummaryText"><Data ss:Type="String">เริ่มปฏิบัติงานตั้งแต่เวลา ๐๘.๓๐-๑๖.๓๐ น.</Data></Cell>
    </Row>
    <Row ss:Height="20">
-    <Cell ss:Index="3" ss:StyleID="SummaryText"><Data ss:Type="String">หยุดพัก</Data></Cell>
-    <Cell ss:Index="4" ss:MergeAcross="4" ss:StyleID="SummaryText"><Data ss:Type="String">เวลา ๑๒.๐๐-๑๓.๐๐ น.</Data></Cell>
+    <Cell ss:Index="4" ss:StyleID="SummaryText"><Data ss:Type="String">หยุดพัก</Data></Cell>
+    <Cell ss:Index="5" ss:MergeAcross="3" ss:StyleID="SummaryText"><Data ss:Type="String">เวลา ๑๒.๐๐-๑๓.๐๐ น.</Data></Cell>
    </Row>
    <Row ss:Height="20">
     <Cell ss:Index="1" ss:MergeAcross="7" ss:StyleID="SummaryText"><Data ss:Type="String">สรุปจำนวนข้าราชการ/พนักงานราชการ/พนักงานกระทรวงสาธารณสุข ที่อยู่ปฏิบัติราชการนอกเวลาราชการปกติของ</Data></Cell>

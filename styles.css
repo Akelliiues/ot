@@ -614,7 +614,7 @@ input:checked+.slider:before {
 }
 
 #tab-daily .work-time-title {
-    width: 220px;
+    width: 302px;
     flex-shrink: 0;
 }
 
@@ -1453,6 +1453,11 @@ input:checked+.slider:before {
         font-size: 8.0pt !important;
         margin: 4px 0 !important;
         line-height: 1.35 !important;
+    }
+
+    #tab-daily .work-time-title {
+        width: 302px !important;
+        flex-shrink: 0 !important;
     }
 
     #tab-daily .summary-counts {
