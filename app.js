@@ -239,11 +239,7 @@ class OTApp {
     }
 
     redirectToMainSite() {
-        if (window.history.length > 1 && document.referrer) {
-            window.history.back();
-        } else {
-            window.location.href = '../';
-        }
+        window.location.href = 'https://www.ssotansum.com';
     }
 
     resetDefaultStaff() {
