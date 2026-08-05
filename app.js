@@ -1380,7 +1380,7 @@ class OTApp {
     <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String"></Data></Cell>
     <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String">${hours > 0 ? outTime : ''}</Data></Cell>
     <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String"></Data></Cell>
-    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String">${hours > 0 ? 'ปฏิบัติงานตามแผน' : ''}</Data></Cell>
+    <Cell ss:StyleID="TableCellCenter"><Data ss:Type="String"></Data></Cell>
    </Row>
 `;
                 });
