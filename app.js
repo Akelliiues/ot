@@ -183,9 +183,6 @@ class OTApp {
 
     // Authentication Checks & Handlers
     checkAuth() {
-        // Clear any old legacy localStorage auth key
-        localStorage.removeItem('ot_logged_in');
-
         const isLoggedIn = sessionStorage.getItem('ot_logged_in') === 'true';
         const loginOverlay = document.getElementById('loginOverlay');
         const logoutBtn = document.getElementById('logoutBtn');
@@ -206,7 +203,7 @@ class OTApp {
         const errorMsg = document.getElementById('loginError');
 
         const username = usernameInput ? usernameInput.value.trim() : '';
-        const password = passwordInput ? passwordInput.value.trim() : '';
+        const password = passwordInput ? passwordInput.value : '';
 
         if (username === 'ssotansum' && password === '00325') {
             sessionStorage.setItem('ot_logged_in', 'true');
@@ -223,7 +220,6 @@ class OTApp {
     handleLogout() {
         if (confirm('คุณต้องการออกจากระบบใช่หรือไม่?')) {
             sessionStorage.removeItem('ot_logged_in');
-            localStorage.removeItem('ot_logged_in');
             const usernameInput = document.getElementById('loginUsername');
             const passwordInput = document.getElementById('loginPassword');
             if (usernameInput) usernameInput.value = '';
@@ -616,13 +612,16 @@ class OTApp {
 
         const currentData = otMatrixStorage[this.currentMonthKey] || {};
 
+        let activeIndex = 1;
         let firstActiveStaff = null;
         this.staffList.forEach(staff => {
             const staffOt = currentData[staff.id] || {};
             const hours = staffOt[day] || 0;
 
             if (hours > 0) {
-                if (!firstActiveStaff) firstActiveStaff = staff;
+                if (!firstActiveStaff) {
+                    firstActiveStaff = staff;
+                }
                 if (staff.type === 'GOVT') countGov++;
                 else if (staff.type === 'STATE') countState++;
                 else if (staff.type === 'MOH') countMoh++;
@@ -668,18 +667,6 @@ class OTApp {
 
         tbody.innerHTML = html;
 
-        if (!firstActiveStaff && this.staffList.length > 0) {
-            firstActiveStaff = this.staffList[0];
-        }
-
-        const supervisorName = firstActiveStaff ? `(${firstActiveStaff.name})` : '(...................................................)';
-        const supervisorPos = firstActiveStaff ? `ตำแหน่ง ${firstActiveStaff.position}` : 'ตำแหน่ง ...................................................';
-
-        const nameEl = document.getElementById('dailySupervisorName');
-        if (nameEl) nameEl.innerText = supervisorName;
-        const posEl = document.getElementById('dailySupervisorPos');
-        if (posEl) posEl.innerText = supervisorPos;
-
         const cGovEl = document.getElementById('countGov');
         if (cGovEl) cGovEl.innerText = formatDottedCount(countGov);
         const cStateEl = document.getElementById('countState');
@@ -688,6 +675,16 @@ class OTApp {
         if (cMohEl) cMohEl.innerText = formatDottedCount(countMoh);
         const cTotEl = document.getElementById('countTotal');
         if (cTotEl) cTotEl.innerText = formatDottedCount(countGov + countState + countMoh);
+
+        const supNameEl = document.getElementById('dailySupervisorName');
+        const supPosEl = document.getElementById('dailySupervisorPosition');
+        if (firstActiveStaff) {
+            if (supNameEl) supNameEl.innerText = `(${firstActiveStaff.name})`;
+            if (supPosEl) supPosEl.innerText = firstActiveStaff.position;
+        } else {
+            if (supNameEl) supNameEl.innerText = '(...................................................)';
+            if (supPosEl) supPosEl.innerText = '...................................................';
+        }
     }
 
     renderSummaryTable() {
@@ -1436,10 +1433,10 @@ class OTApp {
     <Cell ss:Index="5" ss:MergeAcross="3" ss:StyleID="SignatureText"><Data ss:Type="String">(ลงชื่อ).................................................... ผู้ควบคุม/ตรวจสอบ</Data></Cell>
    </Row>
    <Row ss:Height="22">
-    <Cell ss:Index="5" ss:MergeAcross="3" ss:StyleID="SignatureText"><Data ss:Type="String">${escapeXml(firstStaff ? `(${firstStaff.name})` : '(...................................................)')}</Data></Cell>
+    <Cell ss:Index="5" ss:MergeAcross="3" ss:StyleID="SignatureText"><Data ss:Type="String">(${escapeXml(activeStaffList.length > 0 ? activeStaffList[0].name : '...................................................')})</Data></Cell>
    </Row>
    <Row ss:Height="22">
-    <Cell ss:Index="5" ss:MergeAcross="3" ss:StyleID="SignatureText"><Data ss:Type="String">${escapeXml(firstStaff ? `ตำแหน่ง ${firstStaff.position}` : 'ตำแหน่ง ...................................................')}</Data></Cell>
+    <Cell ss:Index="5" ss:MergeAcross="3" ss:StyleID="SignatureText"><Data ss:Type="String">ตำแหน่ง ${escapeXml(activeStaffList.length > 0 ? activeStaffList[0].position : '...................................................')}</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -1496,17 +1493,8 @@ class OTApp {
 
 
 
-// Initialize Application safely across environments & loading states
-var app;
-function initOTApp() {
-    if (!window.app) {
-        window.app = new OTApp();
-        app = window.app;
-    }
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initOTApp);
-} else {
-    initOTApp();
-}
+// Initialize Application
+let app;
+document.addEventListener('DOMContentLoaded', () => {
+    app = new OTApp();
+});
