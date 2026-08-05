@@ -628,40 +628,72 @@ input:checked+.slider:before {
 }
 
 #tab-daily .summary-counts {
-    margin: 10px 0;
+    margin-top: 36px;
+    margin-bottom: 10px;
     line-height: 1.8;
 }
 
 #tab-daily .supervisor-sig-wrapper {
     display: flex;
     justify-content: flex-end;
-    margin-top: 24px;
+    margin-top: 20px;
     padding-right: 20px;
     font-size: 10pt;
     color: #000;
 }
 
 #tab-daily .supervisor-sig-wrapper.margin-down-2rows {
-    margin-top: 55px;
+    margin-top: 30px;
 }
 
 #tab-daily .supervisor-sig-box {
     display: flex;
     flex-direction: column;
-    gap: 4px;
 }
 
-#tab-daily .supervisor-sig-box .sig-line {
+#tab-daily .sig-line-row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     white-space: nowrap;
 }
 
-#tab-daily .supervisor-sig-box .sig-label {
-    display: inline-block;
-    width: 54px;
-    text-align: right;
+#tab-daily .sig-prefix {
     margin-right: 6px;
+    line-height: 1.4;
+}
+
+#tab-daily .sig-center-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-width: 240px;
+}
+
+#tab-daily .sig-dots {
+    width: 100%;
+    text-align: center;
+    line-height: 1.4;
+}
+
+#tab-daily .sig-name-text {
+    width: 100%;
+    text-align: center;
+    margin-top: 4px;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+#tab-daily .sig-pos-text {
+    width: 100%;
+    text-align: center;
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+#tab-daily .sig-suffix {
+    margin-left: 6px;
+    line-height: 1.4;
 }
 
 /* ==========================================================================
@@ -1462,12 +1494,23 @@ input:checked+.slider:before {
 
     #tab-daily .summary-counts {
         font-size: 8.0pt !important;
-        margin: 4px 0 !important;
+        margin-top: 20px !important;
+        margin-bottom: 4px !important;
         line-height: 1.4 !important;
     }
 
     #tab-daily .supervisor-sig-wrapper.margin-down-2rows {
         margin-top: 16px !important;
+    }
+
+    #tab-daily .sig-center-col {
+        min-width: 200px !important;
+    }
+
+    #tab-daily .sig-name-text,
+    #tab-daily .sig-pos-text {
+        font-size: 8.0pt !important;
+        margin-top: 2px !important;
     }
 
     /* Print Scope: Tab 3 (#tab-summary) - Note row spaced 3 lines away below signatures (สาธารณสุขอำเภอ) */

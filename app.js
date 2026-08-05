@@ -612,12 +612,13 @@ class OTApp {
 
         const currentData = otMatrixStorage[this.currentMonthKey] || {};
 
-        let activeIndex = 1;
+        let firstActiveStaff = null;
         this.staffList.forEach(staff => {
             const staffOt = currentData[staff.id] || {};
             const hours = staffOt[day] || 0;
 
             if (hours > 0) {
+                if (!firstActiveStaff) firstActiveStaff = staff;
                 if (staff.type === 'GOVT') countGov++;
                 else if (staff.type === 'STATE') countState++;
                 else if (staff.type === 'MOH') countMoh++;
@@ -662,6 +663,18 @@ class OTApp {
         }
 
         tbody.innerHTML = html;
+
+        if (!firstActiveStaff && this.staffList.length > 0) {
+            firstActiveStaff = this.staffList[0];
+        }
+
+        const supervisorName = firstActiveStaff ? `(${firstActiveStaff.name})` : '(...................................................)';
+        const supervisorPos = firstActiveStaff ? `ตำแหน่ง ${firstActiveStaff.position}` : 'ตำแหน่ง ...................................................';
+
+        const nameEl = document.getElementById('dailySupervisorName');
+        if (nameEl) nameEl.innerText = supervisorName;
+        const posEl = document.getElementById('dailySupervisorPos');
+        if (posEl) posEl.innerText = supervisorPos;
 
         const cGovEl = document.getElementById('countGov');
         if (cGovEl) cGovEl.innerText = formatDottedCount(countGov);
@@ -1401,8 +1414,10 @@ class OTApp {
     <Cell ss:Index="3" ss:StyleID="SummaryText"><Data ss:Type="String">หยุดพัก</Data></Cell>
     <Cell ss:Index="4" ss:MergeAcross="4" ss:StyleID="SummaryText"><Data ss:Type="String">เวลา ๑๒.๐๐-๑๓.๐๐ น.</Data></Cell>
    </Row>
+   <Row ss:Height="16"/>
+   <Row ss:Height="16"/>
    <Row ss:Height="20">
-    <Cell ss:Index="1" ss:MergeAcross="7" ss:StyleID="SummaryText"><Data ss:Type="String">สรุปจำนวนข้าราชการ/พนักงานราชการ/พนักงานกระทรวงสาธารณสุข ที่อยู่ปฏิบัติราชการนอกเวลาราชการปกติของ</Data></Cell>
+    <Cell ss:Index="1" ss:MergeAcross="7" ss:StyleID="SummaryText"><Data ss:Type="String">สรุปจำนวนข้าราชการ/พนักงานราชการ/พนักงานกระทรวงสาธารณสุข ที่อยู่ปฏิบัติราชการนอกเวลาราชการปกติ</Data></Cell>
    </Row>
    <Row ss:Height="20">
     <Cell ss:Index="1" ss:MergeAcross="7" ss:StyleID="SummaryText"><Data ss:Type="String">ข้าราชการ ${formatDottedCount(countGov)} คน พนักงานราชการ ${formatDottedCount(countState)} คน</Data></Cell>
@@ -1417,10 +1432,10 @@ class OTApp {
     <Cell ss:Index="5" ss:MergeAcross="3" ss:StyleID="SignatureText"><Data ss:Type="String">(ลงชื่อ).................................................... ผู้ควบคุม/ตรวจสอบ</Data></Cell>
    </Row>
    <Row ss:Height="22">
-    <Cell ss:Index="5" ss:MergeAcross="3" ss:StyleID="SignatureText"><Data ss:Type="String">(นายอุทยาน จันทรโสภา)</Data></Cell>
+    <Cell ss:Index="5" ss:MergeAcross="3" ss:StyleID="SignatureText"><Data ss:Type="String">${escapeXml(firstStaff ? `(${firstStaff.name})` : '(...................................................)')}</Data></Cell>
    </Row>
    <Row ss:Height="22">
-    <Cell ss:Index="5" ss:MergeAcross="3" ss:StyleID="SignatureText"><Data ss:Type="String">ตำแหน่ง สาธารณสุขอำเภอตาลสุม</Data></Cell>
+    <Cell ss:Index="5" ss:MergeAcross="3" ss:StyleID="SignatureText"><Data ss:Type="String">${escapeXml(firstStaff ? `ตำแหน่ง ${firstStaff.position}` : 'ตำแหน่ง ...................................................')}</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
