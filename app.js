@@ -1064,7 +1064,7 @@ class OTApp {
             if (percentText) percentText.innerText = `${percent}%`;
             if (statusText) statusText.innerText = statusMsg;
             if (detailText) detailText.innerText = detailMsg;
-            await new Promise(resolve => setTimeout(resolve, 20));
+            await new Promise(resolve => setTimeout(resolve, 15));
         };
 
         try {
@@ -1176,7 +1176,7 @@ class OTApp {
                             <td colspan="26" style="text-align: center; font-size: 16pt; font-weight: bold; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif; padding: 4px 0;">บัญชีลงเวลาการปฏิบัติงานนอกเวลาราชการและวันหยุดราชการ</td>
                         </tr>
                         <tr>
-                            <td colspan="26" style="text-align: center; font-size: 14pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif; padding-bottom: 8px;">หน่วยงาน สำนักงานสาธารณสุขอำเภอตาลสุม ประจำวัน${dayOfWeekStr} ที่ ${dayNumThai} เดือน ${monthName} พ.ศ. ${yearThai}</td>
+                            <td colspan="26" style="text-align: center; font-size: 14pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif; padding-bottom: 8px;">หน่วยงาน สำนักงานสาธารณสุขอำเภอตาลสุม ประจำวันที่ ${dayNumThai} ${monthName} พ.ศ. ${yearThai}</td>
                         </tr>
                         <tr><td colspan="26" style="height: 6px;"></td></tr>
 
@@ -1187,67 +1187,83 @@ class OTApp {
                             <th rowspan="2" colspan="6" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ตำแหน่ง</th>
                             <th colspan="4" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">เวลามา</th>
                             <th colspan="4" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">เวลากลับ</th>
-                            <th rowspan="2" colspan="2" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">จำนวน ชม.</th>
-                            <th rowspan="2" colspan="3" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">หมายเหตุ</th>
+                            <th rowspan="2" colspan="7" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">หมายเหตุ</th>
                         </tr>
                         <tr style="height: 24px;">
-                            <th colspan="3" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">เซ็นชื่อ</th>
-                            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ลงเวลา</th>
-                            <th colspan="3" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">เซ็นชื่อ</th>
-                            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ลงเวลา</th>
+                            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">เวลา</th>
+                            <th colspan="3" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ลายมือชื่อ</th>
+                            <th style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">เวลา</th>
+                            <th colspan="3" style="border: 1px solid #000000; text-align: center; vertical-align: middle; background-color: #f8fafc; font-weight: bold; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ลายมือชื่อ</th>
                         </tr>
                 `;
 
+                let activeCount = 0;
                 listToUse.forEach((staff, idx) => {
                     const staffOt = currentData[staff.id] || {};
                     const hours = staffOt[d] || 0;
 
                     if (hours > 0) {
+                        activeCount++;
                         const typeStr = (staff.typeText || staff.type || '').toString();
                         if (typeStr.includes('ข้าราชการ') || staff.type === 'GOVT') countGov++;
                         else if (typeStr.includes('พนักงานราชการ') || staff.type === 'STATE') countState++;
                         else if (typeStr.includes('พนักงานกระทรวง') || staff.type === 'MOH') countMoh++;
                     }
 
-                    let inTime = holidayInfo.isHoliday ? '08:00' : '16:30';
-                    let outTime = holidayInfo.isHoliday ? '12:00' : '18:30';
-                    let hrsText = hours > 0 ? `${toThaiNumerals(hours)}` : '-';
+                    let inTime = holidayInfo.isHoliday ? '๐๘.๓๐' : '๑๖.๓๐';
+                    let outTime = holidayInfo.isHoliday ? '๑๖.๓๐' : '๑๘.๓๐';
 
                     dailyHtml += `
                         <tr style="height: 28px;">
                             <td style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${toThaiNumerals(idx + 1)}</td>
                             <td colspan="6" style="border: 1px solid #000000; text-align: left; vertical-align: middle; padding-left: 6px; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${staff.name}</td>
                             <td colspan="6" style="border: 1px solid #000000; text-align: left; vertical-align: middle; padding-left: 6px; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${staff.position}</td>
+                            <td style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${hours > 0 ? inTime : ''}</td>
                             <td colspan="3" style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;"></td>
-                            <td style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${hours > 0 ? inTime : '-'}</td>
+                            <td style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${hours > 0 ? outTime : ''}</td>
                             <td colspan="3" style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;"></td>
-                            <td style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${hours > 0 ? outTime : '-'}</td>
-                            <td colspan="2" style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${hrsText}</td>
-                            <td colspan="3" style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${hours > 0 ? 'ปฏิบัติงานตามแผน' : '-'}</td>
+                            <td colspan="7" style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${hours > 0 ? 'ปฏิบัติงานตามแผน' : ''}</td>
                         </tr>
                     `;
                 });
 
+                // Pad remaining rows up to 14 total print rows (matching HTML print preview)
+                const printRowsLimit = 14;
+                for (let r = listToUse.length + 1; r <= printRowsLimit; r++) {
+                    dailyHtml += `
+                        <tr style="height: 28px;">
+                            <td style="border: 1px solid #000000; text-align: center; vertical-align: middle; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">${toThaiNumerals(r)}</td>
+                            <td colspan="6" style="border: 1px solid #000000;"></td>
+                            <td colspan="6" style="border: 1px solid #000000;"></td>
+                            <td style="border: 1px solid #000000;"></td>
+                            <td colspan="3" style="border: 1px solid #000000;"></td>
+                            <td style="border: 1px solid #000000;"></td>
+                            <td colspan="3" style="border: 1px solid #000000;"></td>
+                            <td colspan="7" style="border: 1px solid #000000;"></td>
+                        </tr>
+                    `;
+                }
+
                 dailyHtml += `
-                    <tr><td colspan="26" style="height: 8px;"></td></tr>
+                    <tr><td colspan="26" style="height: 10px;"></td></tr>
                     <tr>
-                        <td colspan="26" style="font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif; padding-top: 4px;">รวมผู้มาปฏิบัติงานครั้งนี้ จำนวน ${toThaiNumerals(listToUse.length)} คน แยกเป็น</td>
+                        <td colspan="26" style="font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif; padding-top: 4px;">รวมผู้มาปฏิบัติงานครั้งนี้ จำนวน ${formatDottedCount(activeCount)} คน แยกเป็น</td>
                     </tr>
                     <tr>
-                        <td colspan="26" style="font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ข้าราชการ จำนวน ${toThaiNumerals(countGov)} คน   พนักงานราชการ จำนวน ${toThaiNumerals(countState)} คน   พนักงานกระทรวงสาธารณสุข จำนวน ${toThaiNumerals(countMoh)} คน</td>
+                        <td colspan="26" style="font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ข้าราชการ จำนวน ${formatDottedCount(countGov)} คน   พนักงานราชการ จำนวน ${formatDottedCount(countState)} คน   พนักงานกระทรวงสาธารณสุข จำนวน ${formatDottedCount(countMoh)} คน</td>
                     </tr>
-                    <tr><td colspan="26" style="height: 16px;"></td></tr>
+                    <tr><td colspan="26" style="height: 18px;"></td></tr>
                     <tr>
                         <td colspan="12"></td>
-                        <td colspan="14" style="text-align: center; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">(ลงชื่อ).................................................... ผู้ควบคุมการปฏิบัติงาน</td>
-                    </tr>
-                    <tr>
-                        <td colspan="12"></td>
-                        <td colspan="14" style="text-align: center; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif; padding-top: 4px;">(นางสาวพัชรี ภูธร)</td>
+                        <td colspan="14" style="text-align: center; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">(ลงชื่อ).................................................... ผู้ควบคุม/ตรวจสอบ</td>
                     </tr>
                     <tr>
                         <td colspan="12"></td>
-                        <td colspan="14" style="text-align: center; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ตำแหน่ง นักวิชาการสาธารณสุขชำนาญการ</td>
+                        <td colspan="14" style="text-align: center; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif; padding-top: 4px;">(นายอุทยาน จันทรโสภา)</td>
+                    </tr>
+                    <tr>
+                        <td colspan="12"></td>
+                        <td colspan="14" style="text-align: center; font-size: 13pt; font-family: 'TH Sarabun PSK', 'TH Sarabun New', 'Sarabun', sans-serif;">ตำแหน่ง สาธารณสุขอำเภอตาลสุม</td>
                     </tr>
                 </table>
                 `;
@@ -1273,17 +1289,14 @@ class OTApp {
                     { wch: 5 },   // A: ลำดับ
                     { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 },  // B-G: ชื่อ-สกุล (6 ช่อง)
                     { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 },  // H-M: ตำแหน่ง (6 ช่อง)
-                    { wch: 4 }, { wch: 4 }, { wch: 4 }, { wch: 7 },                          // N-Q: เวลามา (3 เซ็นชื่อ + 1 ลงเวลา)
-                    { wch: 4 }, { wch: 4 }, { wch: 4 }, { wch: 7 },                          // R-U: เวลากลับ (3 เซ็นชื่อ + 1 ลงเวลา)
-                    { wch: 5 }, { wch: 5 },                                                   // V-W: จำนวน ชม. (2 ช่อง)
-                    { wch: 6 }, { wch: 6 }, { wch: 6 }                                        // X-Z: หมายเหตุ (3 ช่อง)
+                    { wch: 7 }, { wch: 4 }, { wch: 4 }, { wch: 4 },                          // N-Q: เวลามา (1 เวลา + 3 เซ็นชื่อ)
+                    { wch: 7 }, { wch: 4 }, { wch: 4 }, { wch: 4 },                          // R-U: เวลากลับ (1 เวลา + 3 เซ็นชื่อ)
+                    { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }, { wch: 5 }               // V-Z: หมายเหตุ (5 ช่อง)
                 ];
 
                 const sheetName = `วันที่ ${dayNumThai}`;
                 XLSX.utils.book_append_sheet(wb, wsDaily, sheetName);
             }
-
-
 
             await updateProgress(95, 'กำลังรวบรวมไฟล์ Excel ตั้งค่าหน้าพิมพ์แนวตั้ง A4...', `${this.daysInMonth} / ${this.daysInMonth} วัน`);
             const fileName = `บัญชีลงเวลารายวัน_รายเดือน_${monthName}_${yearThai}_สสอ.ตาลสุม.xlsx`;
