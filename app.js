@@ -223,7 +223,7 @@ class OTApp {
             const key = `${y}-${mStr}`;
             const label = `${monthNamesThai[mStr]} ${toThaiNumerals(y + 543)}`;
             months.push({ key, label });
-            
+
             d.setMonth(d.getMonth() - 1);
         }
 
@@ -286,7 +286,7 @@ class OTApp {
         const mStr = String(this.month).padStart(2, '0');
         const monthName = monthNamesThai[mStr];
         const yearThai = toThaiNumerals(this.year + 543);
-        
+
         let tabPrefix = "๑_แผนการปฏิบัติงานOT";
         let isLandscape = false;
 
@@ -417,7 +417,7 @@ class OTApp {
     renderCalendarHeader() {
         const planHeaderDates = document.getElementById('planHeaderDates');
         const summaryHeaderDates = document.getElementById('summaryHeaderDates');
-        
+
         let planHtml = '';
         let summaryHtml = '';
 
@@ -703,7 +703,7 @@ class OTApp {
 
         const docNoTextEl = document.getElementById('memoDocNoText');
         if (docNoTextEl) docNoTextEl.innerText = docNoInput;
-        
+
         let dateVal = docDateInput;
         if (!dateVal.includes('เดือน') && dateVal.includes(' ')) {
             const parts = dateVal.trim().split(/\s+/);
@@ -962,159 +962,25 @@ class OTApp {
 
         let typeText = 'ข้าราชการ';
         if (type === 'STATE') typeText = 'พนักงานราชการ';
-        else if (type === 'MOH') typeText = 'พนักงานกระทรวงสาธารณสุข';
-
-        if (idInput) {
-            const staff = this.staffList.find(s => s.id === parseInt(idInput));
-            if (staff) {
-                staff.name = name;
-                staff.position = position || 'เจ้าหน้าที่สาธารณสุข';
-                staff.type = type;
-                staff.typeText = typeText;
-                staff.dutyName = dutyName;
-                staff.dutyReason = dutyReason;
-            }
-        } else {
-            this.staffList.push({
-                id: Date.now(),
-                name: name,
-                position: position || 'เจ้าหน้าที่สาธารณสุข',
-                type: type,
-                typeText: typeText,
-                dutyName: dutyName,
-                dutyReason: dutyReason
-            });
-        }
-
-        localStorage.setItem('ot_staff_list', JSON.stringify(this.staffList));
-        this.closeStaffModal();
-
-        this.renderStaffList();
-        this.renderPlanMatrix();
-        this.renderSummaryTable();
-        this.renderMemoDoc();
-        this.renderReportDoc();
-        this.initCertifierSelect();
-    }
-
-    editStaff(id) {
-        this.openStaffModal(id);
-    }
-
-    // Modern Delete Confirmation Modal Handlers
-    deleteStaff(id) {
-        const staff = this.staffList.find(s => s.id === id);
-        if (!staff) return;
-
-        const deleteModal = document.getElementById('deleteModal');
-        const idInput = document.getElementById('deleteStaffId');
-        const nameText = document.getElementById('deleteStaffNameText');
-
-        if (deleteModal && idInput && nameText) {
-            idInput.value = staff.id;
-            nameText.innerText = `คุณต้องการลบเจ้าหน้าที่ "${staff.name}" ใช่หรือไม่?`;
-            deleteModal.style.display = 'flex';
-        } else {
-            this.performDelete(id);
-        }
-    }
-
-    closeDeleteModal() {
-        const deleteModal = document.getElementById('deleteModal');
-        if (deleteModal) deleteModal.style.display = 'none';
-    }
-
-    confirmDeleteStaff() {
-        const idInput = document.getElementById('deleteStaffId');
-        if (idInput && idInput.value) {
-            const id = parseInt(idInput.value);
-            this.performDelete(id);
-        }
-        this.closeDeleteModal();
-    }
-
-    performDelete(id) {
-        this.staffList = this.staffList.filter(s => s.id !== id);
-        localStorage.setItem('ot_staff_list', JSON.stringify(this.staffList));
-        this.renderStaffList();
-        this.renderPlanMatrix();
-        this.renderSummaryTable();
-        this.renderMemoDoc();
-        this.renderReportDoc();
-        this.initCertifierSelect();
-    }
-
-    // Export Daily Log for Whole Month into a Single Excel File (1 Day = 1 Portrait A4 Page, Full Borders & Print Setup 100%)
-    async exportDailyExcelMonth() {
-        const progressModal = document.getElementById('excelProgressModal');
-        const progressBar = document.getElementById('excelProgressBar');
-        const statusText = document.getElementById('excelProgressStatusText');
-        const percentText = document.getElementById('excelProgressPercentText');
-        const detailText = document.getElementById('excelProgressDetailText');
-        const iconEl = document.getElementById('excelProgressIcon');
-
-        // Helper to update progress bar and yield execution to UI main thread
-        const updateProgress = async (percent, statusMsg, detailMsg = '') => {
-            if (progressBar) progressBar.style.width = `${percent}%`;
-            if (percentText) percentText.innerText = `${percent}%`;
-            if (statusText) statusText.innerText = statusMsg;
-            if (detailText) detailText.innerText = detailMsg;
-            await new Promise(resolve => setTimeout(resolve, 15));
-        };
-
-        const escapeXml = (unsafe) => {
-            if (unsafe === null || unsafe === undefined) return '';
-            return unsafe.toString()
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&apos;');
-        };
-
-        try {
-            if (progressModal) progressModal.style.display = 'flex';
-            if (iconEl) iconEl.innerText = '📊';
-
-            await updateProgress(5, 'กำลังเตรียมโครงสร้างแบบฟอร์มการพิมพ์...', `0 / ${this.daysInMonth} วัน`);
-
-            const currentData = otMatrixStorage[this.currentMonthKey] || {};
-            const [yearStr, monthStr] = this.currentMonthKey.split('-');
-            const selYear = parseInt(yearStr, 10);
-            const selMonth = parseInt(monthStr, 10);
-            const monthName = monthNamesThai[monthStr];
-            const yearThai = toThaiNumerals(selYear + 543);
-
-            let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
-<?mso-application progid="Excel.Sheet"?>
-<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
- xmlns:o="urn:schemas-microsoft-com:office:office"
- xmlns:x="urn:schemas-microsoft-com:office:excel"
- xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
- xmlns:html="http://www.w3.org/TR/REC-html40">
- <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
-  <Author>สำนักงานสาธารณสุขอำเภอตาลสุม</Author>
-  <Created>${new Date().toISOString()}</Created>
- </DocumentProperties>
- <Styles>
+        else if (type === 'MOH') typeText = 'พนัก <Styles>
   <Style ss:ID="Default" ss:Name="Normal">
    <Alignment ss:Vertical="Center"/>
    <Borders/>
-   <Font ss:FontName="TH Sarabun PSK" ss:Size="13"/>
+   <Font ss:FontName="TH Sarabun PSK" ss:Size="11"/>
    <Interior/>
    <NumberFormat/>
    <Protection/>
   </Style>
   <Style ss:ID="TitleMain">
-   <Font ss:FontName="TH Sarabun PSK" ss:Size="16" ss:Bold="1"/>
-   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
-  </Style>
-  <Style ss:ID="TitleSub">
    <Font ss:FontName="TH Sarabun PSK" ss:Size="14" ss:Bold="1"/>
    <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
   </Style>
+  <Style ss:ID="TitleSub">
+   <Font ss:FontName="TH Sarabun PSK" ss:Size="11" ss:Bold="1"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+  </Style>
   <Style ss:ID="TableHeader">
-   <Font ss:FontName="TH Sarabun PSK" ss:Size="13" ss:Bold="1"/>
+   <Font ss:FontName="TH Sarabun PSK" ss:Size="11" ss:Bold="1"/>
    <Alignment ss:Horizontal="Center" ss:Vertical="Center" ss:WrapText="1"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -1125,7 +991,7 @@ class OTApp {
    <Interior ss:Color="#F8FAFC" ss:Pattern="Solid"/>
   </Style>
   <Style ss:ID="TableCellCenter">
-   <Font ss:FontName="TH Sarabun PSK" ss:Size="13"/>
+   <Font ss:FontName="TH Sarabun PSK" ss:Size="11"/>
    <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -1135,7 +1001,7 @@ class OTApp {
    </Borders>
   </Style>
   <Style ss:ID="TableCellLeft">
-   <Font ss:FontName="TH Sarabun PSK" ss:Size="13"/>
+   <Font ss:FontName="TH Sarabun PSK" ss:Size="11"/>
    <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -1145,17 +1011,17 @@ class OTApp {
    </Borders>
   </Style>
   <Style ss:ID="SummaryText">
-   <Font ss:FontName="TH Sarabun PSK" ss:Size="13"/>
+   <Font ss:FontName="TH Sarabun PSK" ss:Size="11"/>
    <Alignment ss:Horizontal="Left" ss:Vertical="Center"/>
   </Style>
   <Style ss:ID="SignatureText">
-   <Font ss:FontName="TH Sarabun PSK" ss:Size="13"/>
+   <Font ss:FontName="TH Sarabun PSK" ss:Size="11"/>
    <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
   </Style>
  </Styles>
 `;
 
-            await updateProgress(10, 'กำลังสร้าง Sheet 1: สรุปภาพรวมรายเดือน (ฟอนต์ TH Sarabun)...', `0 / ${this.daysInMonth} วัน`);
+            await updateProgress(10, 'กำลังสร้าง Sheet 1: สรุปภาพรวมรายเดือน (ฟอนต์ TH Sarabun ขนาด 11)...', `0 / ${this.daysInMonth} วัน`);
 
             // --- Sheet 1: สรุปภาพรวมรายเดือน ---
             xmlContent += ` <Worksheet ss:Name="สรุปภาพรวมรายเดือน">
@@ -1228,7 +1094,7 @@ class OTApp {
                 const dayNumThai = toThaiNumerals(d);
                 await updateProgress(
                     pct,
-                    `กำลังจัดหน้าตารางกรอบเส้นคมชัด ฟอนต์ TH Sarabun วันที่ ${dayNumThai} ${monthName}...`,
+                    `กำลังจัดหน้าตารางฟอนต์ TH Sarabun ขนาด 11 วันที่ ${dayNumThai} ${monthName}...`,
                     `${d} / ${this.daysInMonth} วัน`
                 );
 
@@ -1333,6 +1199,8 @@ class OTApp {
    <Row ss:Height="20">
     <Cell ss:Index="1" ss:MergeAcross="7" ss:StyleID="SummaryText"><Data ss:Type="String">ข้าราชการ จำนวน ${formatDottedCount(countGov)} คน   พนักงานราชการ จำนวน ${formatDottedCount(countState)} คน   พนักงานกระทรวงสาธารณสุข จำนวน ${formatDottedCount(countMoh)} คน</Data></Cell>
    </Row>
+   <Row ss:Height="16"/>
+   <Row ss:Height="16"/>
    <Row ss:Height="16"/>
    <Row ss:Height="22">
     <Cell ss:Index="5" ss:MergeAcross="3" ss:StyleID="SignatureText"><Data ss:Type="String">(ลงชื่อ).................................................... ผู้ควบคุม/ตรวจสอบ</Data></Cell>
